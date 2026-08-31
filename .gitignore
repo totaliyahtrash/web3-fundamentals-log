@@ -1,0 +1,21 @@
+# Secrets & Environment variables
+.env
+.env.*
+*.key
+*.pem
+private_key.txt
+seed_phrase.txt
+keystore/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node / Development artifacts (if added later)
+node_modules/
+dist/
+cache/
+out/
+broadcast/
