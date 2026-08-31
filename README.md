@@ -41,8 +41,11 @@ Tracked progress through the **Cyfrin Updraft Blockchain Basics** course taught 
   - [x] Acquiring testnet funds via faucets (Sepolia ETH)
   - [x] Broadcasting native transactions across accounts
   - [x] Inspecting execution on block explorers (Etherscan, Tenderly)
-- [ ] **Module 5: Next Step: Solidity Smart Contract Development**
-  - [ ] Moving to *Solidity 101* & *Foundry Fundamentals*
+- [x] **Module 5: First Step into Solidity**
+  - [x] Setting up Remix IDE & compiler configurations (`^0.8.19`)
+  - [x] Writing `SimpleStorage.sol` (state variables, structs, mappings, arrays)
+  - [x] Understanding function visibility & state mutability (`view` vs state-changing)
+  - [ ] Moving to *Foundry Fundamentals* & *Local Development*
 
 ---
 
@@ -116,9 +119,12 @@ When sending standard testnet ETH from `Account A` to `Account B`, I inspected t
 ## 📂 Repository Structure
 
 ```text
-my-first-blockchain-transactions/
+web3-fundamentals-log/
 ├── README.md                           # Main project documentation & transaction log
 ├── .gitignore                          # Standard git ignore for secrets and temporary files
+├── contracts/
+│   ├── README.md                       # Solidity overview, compilation & Remix guide
+│   └── SimpleStorage.sol               # First smart contract (structs, arrays, mappings, view functions)
 ├── activities/
 │   ├── 01-wallet-setup-and-security.md # Setup guide for burner wallet & seed phrase safety
 │   ├── 02-testnet-faucets.md           # Claiming Sepolia testnet ETH & faucet mechanics
