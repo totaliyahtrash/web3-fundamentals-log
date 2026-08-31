@@ -44,13 +44,3 @@ $$\text{Seed Phrase} \xrightarrow{\text{PBKDF2}} \text{Master Seed} \xrightarrow
    - `.env` files are strictly added to `.gitignore`.
 3. **Phishing & RPC Awareness**:
    - Always verify the RPC URL and Chain ID when adding custom networks (`11155111` for Sepolia).
-
----
-
-## 📸 Screenshots & Artifacts
-
-| Description | File Reference |
-|---|---|
-| Wallet Created & Configured to Sepolia | `../screenshots/01-wallet-setup.png` |
-
-> *Tip: Save your screenshot in the `/screenshots` directory and name it `01-wallet-setup.png`.*

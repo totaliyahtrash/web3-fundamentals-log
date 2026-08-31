@@ -1,37 +1,52 @@
-# 📜 Smart Contracts: First Steps
+# 📜 Smart Contracts: Core Architecture
 
-This directory contains my first Solidity smart contract(s) developed following the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
+This directory contains my Solidity smart contracts developed as part of the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
 
 ---
 
-## 📄 Contracts Overview
+## 🏗️ Contracts Architecture & Patterns
+
+```
+                +---------------------+
+                |  SimpleStorage.sol  | <---+ (Inherits & Overrides)
+                | - store() [virtual] |     |
+                | - retrieve() [view] |     |
+                +---------------------+     |
+                           ^                |
+                           | Deploys & Calls|
+                           |                |
+                +---------------------+  +---------------------+
+                | StorageFactory.sol  |  |  AddFiveStorage.sol |
+                | - new SimpleStorage |  | - store() [override]|
+                | - sfStore()         |  +---------------------+
+                | - sfGet()           |
+                +---------------------+
+```
+
+---
+
+## 📄 File Summaries
 
 ### 1. [`SimpleStorage.sol`](./SimpleStorage.sol)
-My first complete smart contract demonstrating core Solidity primitives and EVM storage mechanics.
+- **EVM Primitives**: State storage variables, custom `struct Person`, dynamic arrays, and $O(1)$ key-value mappings.
+- **Gas Optimization**: Uses `calldata` for non-mutated external string arguments.
+- **Events**: Emits indexed EVM logs (`NumberUpdated`, `PersonAdded`) for transaction receipts and dApp subgraphs.
 
-#### Key Solidity Concepts Implemented:
-- **Pragma & License Identifiers**: Specifying compiler compatibility (`^0.8.19`) and open-source licensing (`MIT`).
-- **Data Types**: `uint256`, `string`, `address`, and custom `struct` definitions.
-- **Data Location (`calldata` vs `memory` vs `storage`)**: Using `calldata` for non-modified external function parameters to minimize gas consumption.
-- **Data Structures**:
-  - `Person[]` (Dynamic array for sequential storage)
-  - `mapping(string => uint256)` (Hash table for $O(1)$ key lookup)
-- **Functions & Visibility**:
-  - `store()`: Modifies state $\rightarrow$ creates a transaction $\rightarrow$ consumes gas.
-  - `retrieve()`: Marked `view` $\rightarrow$ reads state $\rightarrow$ zero gas when called off-chain.
-- **Events & Indexing**: Emitting `NumberUpdated` and `PersonAdded` to log state changes into EVM transaction logs / receipts.
+### 2. [`StorageFactory.sol`](./StorageFactory.sol)
+- **Factory Pattern**: Demonstrates on-chain contract deployment using `new SimpleStorage()`.
+- **Contract Composability**: Interacting with external contracts by casting stored addresses to their contract types (`SimpleStorage(targetAddress).store(...)`).
+
+### 3. [`AddFiveStorage.sol`](./AddFiveStorage.sol)
+- **Object-Oriented Solidity**: Demonstrates inheritance (`is SimpleStorage`), polymorphism, and function overriding with `virtual` and `override` specifiers.
 
 ---
 
-## 🛠️ How to Compile & Test in Remix IDE
+## 🛠️ Testing & Deployment Guide (Remix IDE)
 
-1. Open [Remix Ethereum IDE](https://remix.ethereum.org/).
-2. Create a file named `SimpleStorage.sol` and paste the code.
-3. Under the **Solidity Compiler** tab, select compiler version `0.8.19` and click **Compile SimpleStorage.sol**.
-4. Navigate to the **Deploy & Run Transactions** tab:
-   - Environment: `Remix VM (Cancun)` or `Injected Provider - MetaMask` (for Sepolia Testnet).
-   - Click **Deploy**.
-5. Interact with the deployed contract buttons:
-   - Call `store(42)` $\rightarrow$ signs and broadcasts transaction.
-   - Call `retrieve()` $\rightarrow$ immediately returns `42`.
-   - Call `addPerson("Alice", 7)` $\rightarrow$ updates mapping and array.
+1. Open [Remix IDE](https://remix.ethereum.org/).
+2. Create workspace files for `SimpleStorage.sol`, `StorageFactory.sol`, and `AddFiveStorage.sol`.
+3. Under **Solidity Compiler**, select `0.8.19` (or newer) and compile.
+4. Deploy `StorageFactory.sol`:
+   - Call `createSimpleStorageContract()` $\rightarrow$ deploys a new child contract.
+   - Call `sfStore(0, 77)` $\rightarrow$ delegates call to the deployed child.
+   - Call `sfGet(0)` $\rightarrow$ verifies storage returns `77`.

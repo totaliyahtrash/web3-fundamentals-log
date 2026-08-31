@@ -42,7 +42,7 @@ contract SimpleStorage {
      * @notice Stores a new number in contract state storage.
      * @param _favoriteNumber The new number to store.
      */
-    function store(uint256 _favoriteNumber) public {
+    function store(uint256 _favoriteNumber) public virtual {
         emit NumberUpdated(myFavoriteNumber, _favoriteNumber, msg.sender);
         myFavoriteNumber = _favoriteNumber;
     }
