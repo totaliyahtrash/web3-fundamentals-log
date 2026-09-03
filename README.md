@@ -1,9 +1,10 @@
 # ⛓️ Web3 Fundamentals Log
 
-> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Layer 2 scaling, and Smart Contract Architecture through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
+> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Layer 2 scaling, Smart Contract Architecture, and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
 
 [![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
+[![Foundry](https://img.shields.io/badge/Framework-Foundry-red?style=flat-square&logo=ethereum)](test/FundMeTest.t.sol)
 [![Chainlink](https://img.shields.io/badge/Oracle-Chainlink%20Price%20Feeds-375BD2?style=flat-square&logo=chainlink&logoColor=white)](contracts/PriceConverter.sol)
 [![Account Abstraction](https://img.shields.io/badge/Standard-ERC--4337-orange?style=flat-square)](notes/wallets-and-account-abstraction.md)
 [![Network](https://img.shields.io/badge/Network-Ethereum%20Sepolia-627EEA?style=flat-square&logo=ethereum&logoColor=white)](activities/testnet-transaction-lab.md)
@@ -17,6 +18,7 @@ Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous
 
 Rather than passive video watching, this repository acts as my **verifiable proof of work**. It includes:
 - **Production Smart Contracts**: `FundMe.sol` (Chainlink oracles, gas-optimized `cheaperWithdraw()`, custom errors, immutable/constant state), `StorageFactory.sol`, and `AddFiveStorage.sol`.
+- **Foundry Unit Testing & Deployment**: Automated Forge test suite (`test/FundMeTest.t.sol`) with cheatcodes (`vm.prank`, `vm.deal`, `vm.expectRevert`) and modular deployment scripts (`script/DeployFundMe.s.sol`).
 - **Comprehensive Technical Guides**: In-depth analysis of Wallets (EOA vs. Smart Account ERC-4337, MPC, Multisig), Layer 2 Rollups (Optimistic vs. ZK), EIP-4844 Blobs, and MEV dynamics.
 - **Developer CLI Utilities**: Standalone Python tooling (`scripts/evm_inspector.py`) to simulate EIP-1559 base fee burns, calculate L2 rollup execution/blob fees, and compute mempool speed-up gas requirements.
 - **Hands-on Transaction Auditing**: Real testnet transaction dissections inspecting gas, nonces, and signature recovery.
@@ -53,8 +55,11 @@ Rather than passive video watching, this repository acts as my **verifiable proo
   - [x] `FundMe.sol` (Decentralized crowdfunding, minimum USD threshold via oracle)
   - [x] Gas Optimizations: `immutable`, `constant`, Custom Errors (EIP-838), and memory caching (`cheaperWithdraw()`)
   - [x] Special Functions: `receive()` and `fallback()` for native ETH transfers
-- [ ] **Module 7: Next Step: Foundry Toolkit (Forge, Cast, Anvil)**
-  - [ ] Local testing with `forge test`, scripted deployment pipelines, and fuzzing
+- [x] **Module 7: Foundry Testing & Deployment Pipelines**
+  - [x] Automated unit test suite with Foundry Forge (`test/FundMeTest.t.sol`)
+  - [x] VM Cheatcodes: `vm.prank`, `vm.deal`, `vm.expectRevert`
+  - [x] Scripted multi-network deployment pipeline (`script/DeployFundMe.s.sol`)
+  - [x] Gas profiling and memory optimization benchmarks
 
 ---
 
@@ -85,10 +90,25 @@ Located in [`/contracts`](contracts/):
 +---------------------------------------------------------------------------------+
 ```
 
-1. **[`FundMe.sol`](contracts/FundMe.sol)**: Crowdfunding contract featuring minimum USD checks via Chainlink, custom errors, `immutable`/`constant` variables, and the `cheaperWithdraw()` memory-caching pattern.
-2. **[`PriceConverter.sol`](contracts/PriceConverter.sol)**: Reusable library converting ETH amounts to USD using Chainlink `AggregatorV3Interface`.
-3. **[`mocks/MockV3Aggregator.sol`](contracts/mocks/MockV3Aggregator.sol)**: Mock price feed enabling zero-cost local testing in Remix & Anvil.
-4. **[`SimpleStorage.sol`](contracts/SimpleStorage.sol)**, **[`StorageFactory.sol`](contracts/StorageFactory.sol)**, **[`AddFiveStorage.sol`](contracts/AddFiveStorage.sol)**: Storage primitives, factory deployment patterns, and object-oriented inheritance.
+---
+
+## 🧪 Foundry Automated Testing & Deployment
+
+This project includes a complete **Foundry** test suite for continuous integration and deterministic verification:
+
+```bash
+# Run all unit tests
+forge test
+
+# Run tests with detailed trace logs
+forge test -vvvv
+
+# Run gas snapshot analysis
+forge snapshot
+
+# Deploy to local Anvil or Sepolia testnet
+forge script script/DeployFundMe.s.sol --rpc-url sepolia --broadcast --verify
+```
 
 ---
 
@@ -126,18 +146,24 @@ python scripts/evm_inspector.py --eip1559-sim --start-fee 20.0 --blocks 5 --full
 
 ```text
 web3-fundamentals-log/
-├── README.md                                     # Main project documentation & proof of work
+├── README.md                                     # Master documentation, architecture & roadmap
 ├── LICENSE                                       # Open-source MIT License
+├── foundry.toml                                  # Foundry framework configuration
 ├── .gitignore                                    # Strict secret and environment ignore rules
 ├── contracts/
 │   ├── README.md                                 # Full architecture & Remix deployment guide
-│   ├── FundMe.sol                                # Crowdfunding with Chainlink & gas optimizations
+│   ├── FundMe.sol                                # Crowdfunding with Chainlink & gas patterns
 │   ├── PriceConverter.sol                        # Library for Chainlink AggregatorV3Interface
 │   ├── SimpleStorage.sol                         # Base storage contract (structs, mappings, arrays)
 │   ├── StorageFactory.sol                        # Factory Pattern & contract composability
 │   ├── AddFiveStorage.sol                        # OOP Inheritance & function overriding
 │   └── mocks/
-│       └── MockV3Aggregator.sol                  # Mock Chainlink feed for local testing
+│       └── MockV3Aggregator.sol                  # Mock Chainlink feed for zero-cost local testing
+├── test/
+│   ├── TestHelpers.sol                           # Minimal Forge VM cheatcode interface
+│   └── FundMeTest.t.sol                          # Automated unit tests with prank, deal & gas benchmarking
+├── script/
+│   └── DeployFundMe.s.sol                        # Scripted multi-chain broadcast deployment
 ├── scripts/
 │   └── evm_inspector.py                          # CLI utility for EIP-1559, L2 fees, and speedups
 ├── activities/
