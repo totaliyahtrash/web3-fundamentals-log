@@ -1,13 +1,13 @@
 # ⛓️ Web3 Fundamentals Log
 
-> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Layer 2 scaling, Smart Contract Architecture, and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
+> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Token Standards (ERC-20), Layer 2 scaling, Smart Contract Architecture, and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
 
 [![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
 [![Foundry](https://img.shields.io/badge/Framework-Foundry-red?style=flat-square&logo=ethereum)](test/FundMeTest.t.sol)
+[![ERC-20](https://img.shields.io/badge/Standard-ERC--20-blueviolet?style=flat-square)](contracts/tokens/ManualToken.sol)
 [![Chainlink](https://img.shields.io/badge/Oracle-Chainlink%20Price%20Feeds-375BD2?style=flat-square&logo=chainlink&logoColor=white)](contracts/PriceConverter.sol)
 [![Account Abstraction](https://img.shields.io/badge/Standard-ERC--4337-orange?style=flat-square)](notes/wallets-and-account-abstraction.md)
-[![Network](https://img.shields.io/badge/Network-Ethereum%20Sepolia-627EEA?style=flat-square&logo=ethereum&logoColor=white)](activities/testnet-transaction-lab.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 ---
@@ -17,8 +17,8 @@
 Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous technical journey from core cryptographic principles to composable on-chain architectures.
 
 Rather than passive video watching, this repository acts as my **verifiable proof of work**. It includes:
-- **Production Smart Contracts**: `FundMe.sol` (Chainlink oracles, gas-optimized `cheaperWithdraw()`, custom errors, immutable/constant state), `StorageFactory.sol`, and `AddFiveStorage.sol`.
-- **Foundry Unit Testing & Deployment**: Automated Forge test suite (`test/FundMeTest.t.sol`) with cheatcodes (`vm.prank`, `vm.deal`, `vm.expectRevert`) and modular deployment scripts (`script/DeployFundMe.s.sol`).
+- **Production Smart Contracts**: `FundMe.sol` (Chainlink oracles, gas-optimized `cheaperWithdraw()`, custom errors, immutable/constant state), `ManualToken.sol` (ERC-20 token standard from scratch), `StorageFactory.sol`, and `AddFiveStorage.sol`.
+- **Foundry Unit Testing & Deployment**: Automated Forge test suites (`test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`) with cheatcodes (`vm.prank`, `vm.deal`, `vm.expectRevert`) and modular deployment scripts (`script/DeployFundMe.s.sol`).
 - **Comprehensive Technical Guides**: In-depth analysis of Wallets (EOA vs. Smart Account ERC-4337, MPC, Multisig), Layer 2 Rollups (Optimistic vs. ZK), EIP-4844 Blobs, and MEV dynamics.
 - **Developer CLI Utilities**: Standalone Python tooling (`scripts/evm_inspector.py`) to simulate EIP-1559 base fee burns, calculate L2 rollup execution/blob fees, and compute mempool speed-up gas requirements.
 - **Hands-on Transaction Auditing**: Real testnet transaction dissections inspecting gas, nonces, and signature recovery.
@@ -55,8 +55,11 @@ Rather than passive video watching, this repository acts as my **verifiable proo
   - [x] `FundMe.sol` (Decentralized crowdfunding, minimum USD threshold via oracle)
   - [x] Gas Optimizations: `immutable`, `constant`, Custom Errors (EIP-838), and memory caching (`cheaperWithdraw()`)
   - [x] Special Functions: `receive()` and `fallback()` for native ETH transfers
-- [x] **Module 7: Foundry Testing & Deployment Pipelines**
-  - [x] Automated unit test suite with Foundry Forge (`test/FundMeTest.t.sol`)
+- [x] **Module 7: ERC-20 Token Standard From Scratch**
+  - [x] `ManualToken.sol` (EIP-20 implementation: balances, allowances, transfers, custom errors)
+  - [x] Unit test coverage for direct transfers and delegated `transferFrom` workflows
+- [x] **Module 8: Foundry Testing & Deployment Pipelines**
+  - [x] Automated unit test suite with Foundry Forge (`test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`)
   - [x] VM Cheatcodes: `vm.prank`, `vm.deal`, `vm.expectRevert`
   - [x] Scripted multi-network deployment pipeline (`script/DeployFundMe.s.sol`)
   - [x] Gas profiling and memory optimization benchmarks
@@ -76,6 +79,9 @@ Located in [`/contracts`](contracts/):
 |           ▲                                                                     |
 |           └────────── (Deploys & Calls) ─── StorageFactory.sol                  |
 |                                                                                 |
+|  [ Token Standards Suite ]                                                      |
+|    tokens/ManualToken.sol (EIP-20 Standard from scratch with custom errors)     |
+|                                                                                 |
 |  [ Oracle & DeFi Crowdfunding Suite ]                                           |
 |    AggregatorV3Interface (Chainlink)                                            |
 |           ▲                                                                     |
@@ -94,19 +100,17 @@ Located in [`/contracts`](contracts/):
 
 ## 🧪 Foundry Automated Testing & Deployment
 
-This project includes a complete **Foundry** test suite for continuous integration and deterministic verification:
-
 ```bash
 # Run all unit tests
 forge test
 
-# Run tests with detailed trace logs
-forge test -vvvv
+# Run tests for specific contract
+forge test --match-contract ManualTokenTest -vvv
 
 # Run gas snapshot analysis
 forge snapshot
 
-# Deploy to local Anvil or Sepolia testnet
+# Deploy FundMe to local Anvil or Sepolia testnet
 forge script script/DeployFundMe.s.sol --rpc-url sepolia --broadcast --verify
 ```
 
@@ -157,11 +161,14 @@ web3-fundamentals-log/
 │   ├── SimpleStorage.sol                         # Base storage contract (structs, mappings, arrays)
 │   ├── StorageFactory.sol                        # Factory Pattern & contract composability
 │   ├── AddFiveStorage.sol                        # OOP Inheritance & function overriding
+│   ├── tokens/
+│   │   └── ManualToken.sol                       # ERC-20 Token Standard from scratch
 │   └── mocks/
 │       └── MockV3Aggregator.sol                  # Mock Chainlink feed for zero-cost local testing
 ├── test/
 │   ├── TestHelpers.sol                           # Minimal Forge VM cheatcode interface
-│   └── FundMeTest.t.sol                          # Automated unit tests with prank, deal & gas benchmarking
+│   ├── FundMeTest.t.sol                          # Automated unit tests for FundMe
+│   └── ManualTokenTest.t.sol                     # Automated unit tests for ManualToken ERC-20
 ├── script/
 │   └── DeployFundMe.s.sol                        # Scripted multi-chain broadcast deployment
 ├── scripts/
