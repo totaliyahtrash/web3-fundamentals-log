@@ -1,12 +1,12 @@
 # ⛓️ Web3 Fundamentals Log
 
-> A comprehensive, hands-on engineering log of my deep dive into Ethereum, EVM architecture, Account Abstraction, Layer 2 scaling, and Smart Contract Development through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
+> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Layer 2 scaling, and Smart Contract Architecture through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
 
-[![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft%20Blockchain%20Basics-blue?style=flat-square)](https://updraft.cyfrin.io/)
+[![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
 [![Chainlink](https://img.shields.io/badge/Oracle-Chainlink%20Price%20Feeds-375BD2?style=flat-square&logo=chainlink&logoColor=white)](contracts/PriceConverter.sol)
-[![Network](https://img.shields.io/badge/Network-Ethereum%20Sepolia-627EEA?style=flat-square&logo=ethereum&logoColor=white)](#-testnet-transaction-log)
 [![Account Abstraction](https://img.shields.io/badge/Standard-ERC--4337-orange?style=flat-square)](notes/wallets-and-account-abstraction.md)
+[![Network](https://img.shields.io/badge/Network-Ethereum%20Sepolia-627EEA?style=flat-square&logo=ethereum&logoColor=white)](activities/testnet-transaction-lab.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 ---
@@ -55,18 +55,6 @@ Rather than passive video watching, this repository acts as my **verifiable proo
   - [x] Special Functions: `receive()` and `fallback()` for native ETH transfers
 - [ ] **Module 7: Next Step: Foundry Toolkit (Forge, Cast, Anvil)**
   - [ ] Local testing with `forge test`, scripted deployment pipelines, and fuzzing
-
----
-
-## 📜 Testnet Transaction Log
-
-Verifiable transactions broadcasted across Ethereum testnets during hands-on exercises:
-
-| # | Network | Type | Transaction Hash | Explorer Link | Nonce | Gas Used | Status |
-|---|---------|------|------------------|---------------|-------|----------|--------|
-| `01` | **Sepolia** | Faucet Drip (Funding) | `0x4a9b...[YOUR_TX_HASH]` | [View on Etherscan](https://sepolia.etherscan.io/) | `0` | `21,000` | ✅ Success |
-| `02` | **Sepolia** | Native ETH Transfer | `0x7f2c...[YOUR_TX_HASH]` | [View on Etherscan](https://sepolia.etherscan.io/) | `1` | `21,000` | ✅ Success |
-| `03` | **Tenderly Virtual Testnet** | State Trace & Gas Simulation | `0x1e8a...[YOUR_TX_HASH]` | [View on Tenderly](https://dashboard.tenderly.co/) | `2` | `21,000` | ✅ Success |
 
 ---
 
@@ -130,7 +118,7 @@ python scripts/evm_inspector.py --eip1559-sim --start-fee 20.0 --blocks 5 --full
 - **[`notes/networks-mainnet-testnets-l2s.md`](notes/networks-mainnet-testnets-l2s.md)**: Comprehensive guide to L1 settlement, Sepolia/Holesky testnets, Optimistic vs. ZK Rollups, EIP-4844 blobs, and JSON-RPC node architecture.
 - **[`notes/advanced-transaction-mechanics-and-mev.md`](notes/advanced-transaction-mechanics-and-mev.md)**: Detailed transaction lifecycle, MEV (frontrunning, sandwich attacks), EIP-155 replay protection, and mempool nonce handling.
 - **[`notes/blockchain-fundamentals.md`](notes/blockchain-fundamentals.md)**: Cryptographic hashing, consensus mechanisms, and EVM state transition rules.
-- **[`notes/gas-and-mempool.md`](notes/gas-and-mempool.md)**: Math and dynamics of EIP-1559 fee markets and mempool sequencing.
+- **[`activities/testnet-transaction-lab.md`](activities/testnet-transaction-lab.md)**: Hands-on developer wallet configuration, faucet liquidity acquisition, and EIP-1559 transaction signature dissection.
 
 ---
 
@@ -139,6 +127,7 @@ python scripts/evm_inspector.py --eip1559-sim --start-fee 20.0 --blocks 5 --full
 ```text
 web3-fundamentals-log/
 ├── README.md                                     # Main project documentation & proof of work
+├── LICENSE                                       # Open-source MIT License
 ├── .gitignore                                    # Strict secret and environment ignore rules
 ├── contracts/
 │   ├── README.md                                 # Full architecture & Remix deployment guide
@@ -152,20 +141,17 @@ web3-fundamentals-log/
 ├── scripts/
 │   └── evm_inspector.py                          # CLI utility for EIP-1559, L2 fees, and speedups
 ├── activities/
-│   ├── 01-wallet-setup-and-security.md           # Setup guide for burner wallet & seed safety
-│   ├── 02-testnet-faucets.md                     # Claiming Sepolia ETH & faucet architecture
-│   └── 03-first-testnet-tx.md                    # Transaction payload dissection & signature review
+│   └── testnet-transaction-lab.md                # Wallet setup, faucet mechanics & tx dissection lab
 └── notes/
     ├── wallets-and-account-abstraction.md        # Cryptography, HD paths, MPC, and ERC-4337
     ├── networks-mainnet-testnets-l2s.md          # L1 vs L2 rollups, EIP-4844 blobs, and JSON-RPC
     ├── advanced-transaction-mechanics-and-mev.md # Mempool lifecycle, MEV attacks, and EIP-155
-    ├── blockchain-fundamentals.md                # Consensus, Keccak-256, and EVM state
-    └── gas-and-mempool.md                        # EIP-1559 fee markets and nonce sequencing
+    └── blockchain-fundamentals.md                # Consensus, Keccak-256, and EVM state
 ```
 
 ---
 
 ## 🤝 Connect & Acknowledgments
 
-- **Learner**: [Your Name] ([GitHub](https://github.com/totaliyahtrash) | [LinkedIn Profile](https://linkedin.com/in/yourprofile))
-- **Learning Resource**: Huge thanks to [Patrick Collins](https://github.com/PatrickAlphaC) and the [Cyfrin Updraft](https://updraft.cyfrin.io/) community for creating industry-standard Web3 developer education.
+- **Learner**: [totaliyahtrash](https://github.com/totaliyahtrash)
+- **Learning Resource**: Built while mastering the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum by [Patrick Collins](https://github.com/PatrickAlphaC).
