@@ -4,6 +4,7 @@
 
 [![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft%20Blockchain%20Basics-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
+[![Chainlink](https://img.shields.io/badge/Oracle-Chainlink%20Price%20Feeds-375BD2?style=flat-square&logo=chainlink&logoColor=white)](contracts/PriceConverter.sol)
 [![Network](https://img.shields.io/badge/Network-Ethereum%20Sepolia-627EEA?style=flat-square&logo=ethereum&logoColor=white)](#-testnet-transaction-log)
 [![Account Abstraction](https://img.shields.io/badge/Standard-ERC--4337-orange?style=flat-square)](notes/wallets-and-account-abstraction.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
@@ -15,8 +16,8 @@
 Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous technical journey from core cryptographic principles to composable on-chain architectures.
 
 Rather than passive video watching, this repository acts as my **verifiable proof of work**. It includes:
+- **Production Smart Contracts**: `FundMe.sol` (Chainlink oracles, gas-optimized `cheaperWithdraw()`, custom errors, immutable/constant state), `StorageFactory.sol`, and `AddFiveStorage.sol`.
 - **Comprehensive Technical Guides**: In-depth analysis of Wallets (EOA vs. Smart Account ERC-4337, MPC, Multisig), Layer 2 Rollups (Optimistic vs. ZK), EIP-4844 Blobs, and MEV dynamics.
-- **Smart Contract Implementations**: Production-commented Solidity contracts demonstrating the Factory Pattern, OOP inheritance, function polymorphism, and gas-efficient storage.
 - **Developer CLI Utilities**: Standalone Python tooling (`scripts/evm_inspector.py`) to simulate EIP-1559 base fee burns, calculate L2 rollup execution/blob fees, and compute mempool speed-up gas requirements.
 - **Hands-on Transaction Auditing**: Real testnet transaction dissections inspecting gas, nonces, and signature recovery.
 
@@ -47,9 +48,13 @@ Rather than passive video watching, this repository acts as my **verifiable proo
   - [x] `SimpleStorage.sol` (state variables, structs, mappings, arrays, events, `calldata` vs `memory`)
   - [x] `StorageFactory.sol` (Factory Pattern & contract composability using `new`)
   - [x] `AddFiveStorage.sol` (OOP inheritance, polymorphism, `virtual` and `override` functions)
-- [ ] **Module 6: Next Step: Foundry Toolkit & FundMe Project**
-  - [ ] Local testing with `forge`, RPC casting with `cast`, local chains with `anvil`
-  - [ ] Chainlink Price Feeds & decentralized oracle integrations
+- [x] **Module 6: Advanced Solidity & Chainlink Oracles (`FundMe.sol`)**
+  - [x] `PriceConverter.sol` (Solidity Library & Chainlink `AggregatorV3Interface` oracle integration)
+  - [x] `FundMe.sol` (Decentralized crowdfunding, minimum USD threshold via oracle)
+  - [x] Gas Optimizations: `immutable`, `constant`, Custom Errors (EIP-838), and memory caching (`cheaperWithdraw()`)
+  - [x] Special Functions: `receive()` and `fallback()` for native ETH transfers
+- [ ] **Module 7: Next Step: Foundry Toolkit (Forge, Cast, Anvil)**
+  - [ ] Local testing with `forge test`, scripted deployment pipelines, and fuzzing
 
 ---
 
@@ -70,25 +75,32 @@ Verifiable transactions broadcasted across Ethereum testnets during hands-on exe
 Located in [`/contracts`](contracts/):
 
 ```
-                +---------------------+
-                |  SimpleStorage.sol  | <---+ (Inherits & Overrides)
-                | - store() [virtual] |     |
-                | - retrieve() [view] |     |
-                +---------------------+     |
-                           ^                |
-                           | Deploys & Calls|
-                           |                |
-                +---------------------+  +---------------------+
-                | StorageFactory.sol  |  |  AddFiveStorage.sol |
-                | - new SimpleStorage |  | - store() [override]|
-                | - sfStore()         |  +---------------------+
-                | - sfGet()           |
-                +---------------------+
++---------------------------------------------------------------------------------+
+|                               Smart Contract Suite                              |
+|                                                                                 |
+|  [ Foundational Storage Suite ]                                                 |
+|    SimpleStorage.sol  <─── (Inherits) ───  AddFiveStorage.sol                   |
+|           ▲                                                                     |
+|           └────────── (Deploys & Calls) ─── StorageFactory.sol                  |
+|                                                                                 |
+|  [ Oracle & DeFi Crowdfunding Suite ]                                           |
+|    AggregatorV3Interface (Chainlink)                                            |
+|           ▲                                                                     |
+|           │ (Queries ETH/USD Price)                                             |
+|    PriceConverter.sol (Library: using PriceConverter for uint256)               |
+|           ▲                                                                     |
+|           │ (Price calculations & conversion rates)                             |
+|    FundMe.sol                                                                   |
+|      ├── Custom Errors: `FundMe__NotOwner()`, `FundMe__DidNotSendEnoughETH()`   |
+|      ├── Gas Optimizations: `immutable`, `constant`, SLOAD caching in memory    |
+|      └── Special Functions: `receive()` & `fallback()` to handle native ETH     |
++---------------------------------------------------------------------------------+
 ```
 
-1. **[`SimpleStorage.sol`](contracts/SimpleStorage.sol)**: Core storage slots, dynamic arrays, mappings, events, and view functions.
-2. **[`StorageFactory.sol`](contracts/StorageFactory.sol)**: Factory pattern orchestrating cross-contract deployments and method dispatching.
-3. **[`AddFiveStorage.sol`](contracts/AddFiveStorage.sol)**: Object-Oriented inheritance (`is SimpleStorage`) and function overriding (`super.store()`).
+1. **[`FundMe.sol`](contracts/FundMe.sol)**: Crowdfunding contract featuring minimum USD checks via Chainlink, custom errors, `immutable`/`constant` variables, and the `cheaperWithdraw()` memory-caching pattern.
+2. **[`PriceConverter.sol`](contracts/PriceConverter.sol)**: Reusable library converting ETH amounts to USD using Chainlink `AggregatorV3Interface`.
+3. **[`mocks/MockV3Aggregator.sol`](contracts/mocks/MockV3Aggregator.sol)**: Mock price feed enabling zero-cost local testing in Remix & Anvil.
+4. **[`SimpleStorage.sol`](contracts/SimpleStorage.sol)**, **[`StorageFactory.sol`](contracts/StorageFactory.sol)**, **[`AddFiveStorage.sol`](contracts/AddFiveStorage.sol)**: Storage primitives, factory deployment patterns, and object-oriented inheritance.
 
 ---
 
@@ -129,10 +141,14 @@ web3-fundamentals-log/
 ├── README.md                                     # Main project documentation & proof of work
 ├── .gitignore                                    # Strict secret and environment ignore rules
 ├── contracts/
-│   ├── README.md                                 # Architecture diagram & Remix compilation guide
+│   ├── README.md                                 # Full architecture & Remix deployment guide
+│   ├── FundMe.sol                                # Crowdfunding with Chainlink & gas optimizations
+│   ├── PriceConverter.sol                        # Library for Chainlink AggregatorV3Interface
 │   ├── SimpleStorage.sol                         # Base storage contract (structs, mappings, arrays)
 │   ├── StorageFactory.sol                        # Factory Pattern & contract composability
-│   └── AddFiveStorage.sol                        # OOP Inheritance & function overriding
+│   ├── AddFiveStorage.sol                        # OOP Inheritance & function overriding
+│   └── mocks/
+│       └── MockV3Aggregator.sol                  # Mock Chainlink feed for local testing
 ├── scripts/
 │   └── evm_inspector.py                          # CLI utility for EIP-1559, L2 fees, and speedups
 ├── activities/
