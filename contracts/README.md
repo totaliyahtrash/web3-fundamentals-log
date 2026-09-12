@@ -10,6 +10,15 @@ This directory contains production-grade Solidity smart contracts developed thro
 +---------------------------------------------------------------------------------+
 |                               Smart Contract Suite                              |
 |                                                                                 |
+|  [ DeFi: Decentralized Stablecoin Protocol (DSC) ]                              |
+|    AggregatorV3Interface (WETH/USD & WBTC/USD Feeds)                             |
+|           ▲                                                                     |
+|           │                                                                     |
+|    defi/DSCEngine.sol (Collateral, Health Factors, Liquidations, Mint/Burn)     |
+|           │                                                                     |
+|           ▼ (Mints / Burns pegged $1.00 USD Stablecoin)                         |
+|    defi/DecentralizedStableCoin.sol                                             |
+|                                                                                 |
 |  [ Dynamic On-Chain NFT Suite ]                                                 |
 |    Base64.sol (Gas-efficient assembly Base64 encoder)                          |
 |           ▲                                                                     |
@@ -28,12 +37,8 @@ This directory contains production-grade Solidity smart contracts developed thro
 |    raffle/Raffle.sol (Autonomous Provably Fair Lottery with Enum State Machine) |
 |                                                                                 |
 |  [ Oracle & DeFi Crowdfunding Suite ]                                           |
-|    AggregatorV3Interface (Chainlink)                                            |
-|           ▲                                                                     |
-|           │ (Queries ETH/USD Price)                                             |
 |    PriceConverter.sol (Library: using PriceConverter for uint256)               |
 |           ▲                                                                     |
-|           │ (Price calculations & conversion rates)                             |
 |    FundMe.sol (Crowdfunding with Custom Errors & Gas-Optimized Memory Caching)   |
 |                                                                                 |
 |  [ Token Standards Suite ]                                                      |
@@ -50,18 +55,19 @@ This directory contains production-grade Solidity smart contracts developed thro
 
 ## 📄 File Summaries
 
-### 1. [`nfts/MoodNft.sol`](./nfts/MoodNft.sol) & [`nfts/BasicNft.sol`](./nfts/BasicNft.sol)
+### 1. [`defi/DSCEngine.sol`](./defi/DSCEngine.sol) & [`defi/DecentralizedStableCoin.sol`](./defi/DecentralizedStableCoin.sol)
+- **Decentralized Algorithmic Stablecoin ($1.00 USD Peg)**:
+  - **Exogenous Multi-Collateral**: Backed by WETH and WBTC.
+  - **Overcollateralization Guard**: Minimum 200% collateralization required (50% liquidation threshold).
+  - **Health Factor Mathematical Engine**: 
+    $$\text{Health Factor} = \frac{\text{Collateral Value in USD} \times 50\%}{\text{Total DSC Minted}}$$
+  - **Permissionless Liquidations**: If Health Factor $< 1.0$, external liquidators burn DSC debt to seize the borrower's collateral with a $10\%$ liquidation bonus.
+
+### 2. [`nfts/MoodNft.sol`](./nfts/MoodNft.sol) & [`nfts/BasicNft.sol`](./nfts/BasicNft.sol)
 - **Dynamic On-Chain SVG Artwork**: Encodes raw SVG vector graphics and JSON metadata directly into Base64 strings without IPFS or external servers.
-- **ERC-721 Standard from Scratch**: Implements token ownership, balances, approvals, and dynamic metadata lookups.
-- **State Manipulation**: Interactive `flipMood(tokenId)` allowing owners to toggle the rendered on-chain artwork between HAPPY 😊 and SAD 😢 states.
 
-### 2. [`raffle/Raffle.sol`](./raffle/Raffle.sol)
-- **Provably Fair Lottery**: Guarantees unbiasable winner selection using **Chainlink VRF v2.5**.
-- **Decentralized Automation**: Integrates **Chainlink Automation** (`checkUpkeep` & `performUpkeep`) with an `enum RaffleState { OPEN, CALCULATING }` state machine.
+### 3. [`raffle/Raffle.sol`](./raffle/Raffle.sol)
+- **Provably Fair Lottery**: Guarantees unbiasable winner selection using **Chainlink VRF v2.5** and **Chainlink Automation**.
 
-### 3. [`FundMe.sol`](./FundMe.sol)
-- **Decentralized Crowdfunding**: Accepts native ETH contributions with a minimum constraint enforced in USD ($5 USD).
-- **Gas Optimization Patterns**: `constant`, `immutable`, Custom Errors (EIP-838), and memory-caching (`cheaperWithdraw`).
-
-### 4. [`tokens/ManualToken.sol`](./tokens/ManualToken.sol)
-- **EIP-20 Token Standard From Scratch**: Complete implementation of ERC-20 mechanics (`transfer`, `approve`, `transferFrom`, `allowance`, `balanceOf`).
+### 4. [`FundMe.sol`](./FundMe.sol)
+- **Decentralized Crowdfunding**: Accepts native ETH contributions with a minimum USD constraint, custom errors, and memory caching (`cheaperWithdraw`).

@@ -1,10 +1,11 @@
 # ⛓️ Web3 Fundamentals Log
 
-> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Dynamic On-Chain NFTs (ERC-721), Provably Fair Lotteries (Chainlink VRF & Automation), Token Standards (ERC-20), Layer 2 scaling, and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
+> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), DeFi Stablecoin Protocols (DSC Engine), Dynamic On-Chain NFTs (ERC-721), Provably Fair Lotteries (Chainlink VRF & Automation), Token Standards (ERC-20), and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
 
 [![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
 [![Foundry](https://img.shields.io/badge/Framework-Foundry-red?style=flat-square&logo=ethereum)](test/)
+[![DeFi Protocol](https://img.shields.io/badge/DeFi-Decentralized%20Stablecoin%20(DSC)-gold?style=flat-square)](contracts/defi/DSCEngine.sol)
 [![NFTs](https://img.shields.io/badge/Standard-ERC--721%20On--Chain%20SVG-green?style=flat-square)](contracts/nfts/MoodNft.sol)
 [![Chainlink VRF](https://img.shields.io/badge/Chainlink-VRF%20v2.5%20%26%20Automation-375BD2?style=flat-square&logo=chainlink&logoColor=white)](contracts/raffle/Raffle.sol)
 [![ERC-20](https://img.shields.io/badge/Standard-ERC--20-blueviolet?style=flat-square)](contracts/tokens/ManualToken.sol)
@@ -19,12 +20,13 @@ Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous
 
 Rather than passive video watching, this repository acts as my **verifiable proof of work**. It includes:
 - **Production Smart Contracts**:
+  - `DSCEngine.sol` & `DecentralizedStableCoin.sol`: Algorithmic overcollateralized stablecoin engine with Chainlink price feeds, health factor monitoring, and liquidation mechanics.
   - `MoodNft.sol` & `BasicNft.sol`: Fully on-chain dynamic SVG NFTs encoding graphics into Base64 with interactive state toggling.
   - `Raffle.sol`: Provably fair lottery governed by **Chainlink VRF v2.5** and autonomous **Chainlink Automation** with an enum state machine.
   - `FundMe.sol`: DeFi crowdfunding with **Chainlink Price Feeds**, custom errors, immutable state, and memory caching (`cheaperWithdraw`).
   - `ManualToken.sol`: Full **EIP-20** token standard implementation from scratch.
   - `StorageFactory.sol` & `AddFiveStorage.sol`: On-chain factory deployment and OOP inheritance.
-- **Foundry Unit Testing & Deployment**: Comprehensive Forge test suites (`test/NftTest.t.sol`, `test/RaffleTest.t.sol`, `test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`) with cheatcodes (`vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`).
+- **Foundry Unit Testing & Deployment**: Comprehensive Forge test suites (`test/DSCEngineTest.t.sol`, `test/NftTest.t.sol`, `test/RaffleTest.t.sol`, `test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`) with cheatcodes (`vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`).
 - **Comprehensive Technical Guides**: In-depth analysis of Wallets (EOA vs. Smart Account ERC-4337, MPC, Multisig), Layer 2 Rollups (Optimistic vs. ZK), EIP-4844 Blobs, and MEV dynamics.
 - **Developer CLI Utilities**: Standalone Python tooling (`scripts/evm_inspector.py`) to simulate EIP-1559 base fee burns, calculate L2 rollup execution/blob fees, and compute mempool speed-up gas requirements.
 
@@ -69,9 +71,12 @@ Rather than passive video watching, this repository acts as my **verifiable proo
   - [x] ERC-721 standard implementation from scratch (`BasicNft.sol`)
   - [x] Fully on-chain Base64 metadata encoding without IPFS/cloud hosting
   - [x] Dynamic state manipulation: Owner-controlled mood flipping (Happy $\leftrightarrow$ Sad)
-- [x] **Module 10: Foundry Automated Testing & Deployment**
-  - [x] Unit test suites with Forge: `NftTest.t.sol`, `RaffleTest.t.sol`, `FundMeTest.t.sol`, `ManualTokenTest.t.sol`
-  - [x] VM Cheatcodes: `vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`
+- [x] **Module 10: DeFi Overcollateralized Stablecoin Engine (`DSCEngine.sol`)**
+  - [x] Multi-collateral exogenous backing (WETH / WBTC)
+  - [x] Chainlink Price Feed valuation & 200% Overcollateralization health factor engine
+  - [x] Permissionless liquidation engine with 10% bonus incentive for liquidators
+- [x] **Module 11: Comprehensive Foundry Testing & Deployment**
+  - [x] Forge unit tests: `DSCEngineTest.t.sol`, `NftTest.t.sol`, `RaffleTest.t.sol`, `FundMeTest.t.sol`, `ManualTokenTest.t.sol`
 
 ---
 
@@ -82,6 +87,15 @@ Located in [`/contracts`](contracts/):
 ```
 +---------------------------------------------------------------------------------+
 |                               Smart Contract Suite                              |
+|                                                                                 |
+|  [ DeFi: Decentralized Stablecoin Protocol (DSC) ]                              |
+|    AggregatorV3Interface (WETH/USD & WBTC/USD Feeds)                             |
+|           ▲                                                                     |
+|           │                                                                     |
+|    defi/DSCEngine.sol (Collateral, Health Factors, Liquidations, Mint/Burn)     |
+|           │                                                                     |
+|           ▼ (Mints / Burns pegged $1.00 USD Stablecoin)                         |
+|    defi/DecentralizedStableCoin.sol                                             |
 |                                                                                 |
 |  [ Dynamic On-Chain NFT Suite ]                                                 |
 |    Base64.sol (Gas-efficient assembly Base64 encoder)                          |
@@ -101,12 +115,8 @@ Located in [`/contracts`](contracts/):
 |    raffle/Raffle.sol (Autonomous Provably Fair Lottery with Enum State Machine) |
 |                                                                                 |
 |  [ Oracle & DeFi Crowdfunding Suite ]                                           |
-|    AggregatorV3Interface (Chainlink)                                            |
-|           ▲                                                                     |
-|           │ (Queries ETH/USD Price)                                             |
 |    PriceConverter.sol (Library: using PriceConverter for uint256)               |
 |           ▲                                                                     |
-|           │ (Price calculations & conversion rates)                             |
 |    FundMe.sol (Crowdfunding with Custom Errors & Gas-Optimized Memory Caching)   |
 |                                                                                 |
 |  [ Token Standards Suite ]                                                      |
@@ -126,6 +136,9 @@ Located in [`/contracts`](contracts/):
 ```bash
 # Run all unit tests across all suites
 forge test
+
+# Run tests for the DeFi Stablecoin Engine
+forge test --match-contract DSCEngineTest -vvv
 
 # Run tests for Dynamic SVG NFTs
 forge test --match-contract NftTest -vvv
@@ -149,6 +162,9 @@ web3-fundamentals-log/
 ├── .gitignore                                    # Strict secret and environment ignore rules
 ├── contracts/
 │   ├── README.md                                 # Full architecture & deployment guide
+│   ├── defi/
+│   │   ├── DSCEngine.sol                         # Core DeFi collateral & liquidation engine
+│   │   └── DecentralizedStableCoin.sol           # Algorithmic pegged ERC-20 stablecoin
 │   ├── nfts/
 │   │   ├── Base64.sol                            # Assembly-level Base64 string encoder
 │   │   ├── BasicNft.sol                          # ERC-721 token standard from scratch
@@ -167,6 +183,7 @@ web3-fundamentals-log/
 │       └── MockV3Aggregator.sol                  # Mock Chainlink Price Feed for local testing
 ├── test/
 │   ├── TestHelpers.sol                           # Minimal Forge VM cheatcode interface
+│   ├── DSCEngineTest.t.sol                       # Automated unit tests for DeFi DSC Protocol
 │   ├── NftTest.t.sol                             # Automated unit tests for ERC-721 and Mood NFT
 │   ├── RaffleTest.t.sol                          # Automated unit tests for Raffle & VRF
 │   ├── FundMeTest.t.sol                          # Automated unit tests for FundMe
