@@ -1,12 +1,12 @@
 # ⛓️ Web3 Fundamentals Log
 
-> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Token Standards (ERC-20), Layer 2 scaling, Smart Contract Architecture, and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
+> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Provably Fair Lotteries (Chainlink VRF & Automation), Token Standards (ERC-20), Layer 2 scaling, and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
 
 [![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
-[![Foundry](https://img.shields.io/badge/Framework-Foundry-red?style=flat-square&logo=ethereum)](test/FundMeTest.t.sol)
+[![Foundry](https://img.shields.io/badge/Framework-Foundry-red?style=flat-square&logo=ethereum)](test/)
+[![Chainlink VRF](https://img.shields.io/badge/Chainlink-VRF%20v2.5%20%26%20Automation-375BD2?style=flat-square&logo=chainlink&logoColor=white)](contracts/raffle/Raffle.sol)
 [![ERC-20](https://img.shields.io/badge/Standard-ERC--20-blueviolet?style=flat-square)](contracts/tokens/ManualToken.sol)
-[![Chainlink](https://img.shields.io/badge/Oracle-Chainlink%20Price%20Feeds-375BD2?style=flat-square&logo=chainlink&logoColor=white)](contracts/PriceConverter.sol)
 [![Account Abstraction](https://img.shields.io/badge/Standard-ERC--4337-orange?style=flat-square)](notes/wallets-and-account-abstraction.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
@@ -17,11 +17,14 @@
 Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous technical journey from core cryptographic principles to composable on-chain architectures.
 
 Rather than passive video watching, this repository acts as my **verifiable proof of work**. It includes:
-- **Production Smart Contracts**: `FundMe.sol` (Chainlink oracles, gas-optimized `cheaperWithdraw()`, custom errors, immutable/constant state), `ManualToken.sol` (ERC-20 token standard from scratch), `StorageFactory.sol`, and `AddFiveStorage.sol`.
-- **Foundry Unit Testing & Deployment**: Automated Forge test suites (`test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`) with cheatcodes (`vm.prank`, `vm.deal`, `vm.expectRevert`) and modular deployment scripts (`script/DeployFundMe.s.sol`).
+- **Production Smart Contracts**:
+  - `Raffle.sol`: Provably fair lottery governed by **Chainlink VRF v2.5** and autonomous **Chainlink Automation** with an enum state machine.
+  - `FundMe.sol`: DeFi crowdfunding with **Chainlink Price Feeds**, custom errors, immutable state, and memory caching (`cheaperWithdraw`).
+  - `ManualToken.sol`: Full **EIP-20** token standard implementation from scratch.
+  - `StorageFactory.sol` & `AddFiveStorage.sol`: On-chain factory deployment and OOP inheritance.
+- **Foundry Unit Testing & Deployment**: Comprehensive Forge test suites (`test/RaffleTest.t.sol`, `test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`) with time-travel cheatcodes (`vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`).
 - **Comprehensive Technical Guides**: In-depth analysis of Wallets (EOA vs. Smart Account ERC-4337, MPC, Multisig), Layer 2 Rollups (Optimistic vs. ZK), EIP-4844 Blobs, and MEV dynamics.
 - **Developer CLI Utilities**: Standalone Python tooling (`scripts/evm_inspector.py`) to simulate EIP-1559 base fee burns, calculate L2 rollup execution/blob fees, and compute mempool speed-up gas requirements.
-- **Hands-on Transaction Auditing**: Real testnet transaction dissections inspecting gas, nonces, and signature recovery.
 
 ---
 
@@ -54,15 +57,15 @@ Rather than passive video watching, this repository acts as my **verifiable proo
   - [x] `PriceConverter.sol` (Solidity Library & Chainlink `AggregatorV3Interface` oracle integration)
   - [x] `FundMe.sol` (Decentralized crowdfunding, minimum USD threshold via oracle)
   - [x] Gas Optimizations: `immutable`, `constant`, Custom Errors (EIP-838), and memory caching (`cheaperWithdraw()`)
-  - [x] Special Functions: `receive()` and `fallback()` for native ETH transfers
-- [x] **Module 7: ERC-20 Token Standard From Scratch**
-  - [x] `ManualToken.sol` (EIP-20 implementation: balances, allowances, transfers, custom errors)
-  - [x] Unit test coverage for direct transfers and delegated `transferFrom` workflows
-- [x] **Module 8: Foundry Testing & Deployment Pipelines**
-  - [x] Automated unit test suite with Foundry Forge (`test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`)
-  - [x] VM Cheatcodes: `vm.prank`, `vm.deal`, `vm.expectRevert`
-  - [x] Scripted multi-network deployment pipeline (`script/DeployFundMe.s.sol`)
-  - [x] Gas profiling and memory optimization benchmarks
+- [x] **Module 7: ERC-20 Token Standard From Scratch (`ManualToken.sol`)**
+  - [x] Complete EIP-20 standard: balances, allowances, transfers, custom errors
+- [x] **Module 8: Provably Fair Smart Contract Lottery (`Raffle.sol`)**
+  - [x] Chainlink VRF v2.5 integration for unbiasable, on-chain verifiable randomness
+  - [x] Chainlink Automation (`checkUpkeep` & `performUpkeep`) for autonomous execution
+  - [x] Enum State Machine (`RaffleState { OPEN, CALCULATING }`)
+- [x] **Module 9: Foundry Automated Testing & Deployment**
+  - [x] Unit test suites with Forge: `RaffleTest.t.sol`, `FundMeTest.t.sol`, `ManualTokenTest.t.sol`
+  - [x] VM Cheatcodes: `vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`
 
 ---
 
@@ -74,13 +77,14 @@ Located in [`/contracts`](contracts/):
 +---------------------------------------------------------------------------------+
 |                               Smart Contract Suite                              |
 |                                                                                 |
-|  [ Foundational Storage Suite ]                                                 |
-|    SimpleStorage.sol  <─── (Inherits) ───  AddFiveStorage.sol                   |
+|  [ Provably Fair Lottery Suite ]                                                |
+|    Chainlink VRF Coordinator (Verifiable Random Function v2.5)                   |
 |           ▲                                                                     |
-|           └────────── (Deploys & Calls) ─── StorageFactory.sol                  |
-|                                                                                 |
-|  [ Token Standards Suite ]                                                      |
-|    tokens/ManualToken.sol (EIP-20 Standard from scratch with custom errors)     |
+|           │ (Delivers Cryptographic Randomness)                                 |
+|    Chainlink Automation (Decentralized Time & State Trigger)                    |
+|           ▲                                                                     |
+|           │ (Triggers checkUpkeep -> performUpkeep)                             |
+|    raffle/Raffle.sol (Autonomous Provably Fair Lottery with Enum State Machine) |
 |                                                                                 |
 |  [ Oracle & DeFi Crowdfunding Suite ]                                           |
 |    AggregatorV3Interface (Chainlink)                                            |
@@ -89,10 +93,15 @@ Located in [`/contracts`](contracts/):
 |    PriceConverter.sol (Library: using PriceConverter for uint256)               |
 |           ▲                                                                     |
 |           │ (Price calculations & conversion rates)                             |
-|    FundMe.sol                                                                   |
-|      ├── Custom Errors: `FundMe__NotOwner()`, `FundMe__DidNotSendEnoughETH()`   |
-|      ├── Gas Optimizations: `immutable`, `constant`, SLOAD caching in memory    |
-|      └── Special Functions: `receive()` & `fallback()` to handle native ETH     |
+|    FundMe.sol (Crowdfunding with Custom Errors & Gas-Optimized Memory Caching)   |
+|                                                                                 |
+|  [ Token Standards Suite ]                                                      |
+|    tokens/ManualToken.sol (EIP-20 Standard from scratch with custom errors)     |
+|                                                                                 |
+|  [ Foundational Storage Suite ]                                                 |
+|    SimpleStorage.sol  <─── (Inherits) ───  AddFiveStorage.sol                   |
+|           ▲                                                                     |
+|           └────────── (Deploys & Calls) ─── StorageFactory.sol                  |
 +---------------------------------------------------------------------------------+
 ```
 
@@ -104,14 +113,11 @@ Located in [`/contracts`](contracts/):
 # Run all unit tests
 forge test
 
-# Run tests for specific contract
-forge test --match-contract ManualTokenTest -vvv
+# Run tests for Raffle with detailed execution traces
+forge test --match-contract RaffleTest -vvvv
 
 # Run gas snapshot analysis
 forge snapshot
-
-# Deploy FundMe to local Anvil or Sepolia testnet
-forge script script/DeployFundMe.s.sol --rpc-url sepolia --broadcast --verify
 ```
 
 ---
@@ -126,23 +132,7 @@ python scripts/evm_inspector.py --calc-fee --gas 21000 --base-fee 18.5 --priorit
 
 # Calculate Layer 2 Rollup transaction fee (L2 execution + L1 calldata/blob cost)
 python scripts/evm_inspector.py --l2-fee --l2-gas 50000 --l2-gas-price 0.01 --calldata-bytes 128
-
-# Calculate minimum replacement gas to unstick a pending mempool transaction
-python scripts/evm_inspector.py --speedup --current-fee 20.0
-
-# Simulate EIP-1559 dynamic base fee escalation across full blocks
-python scripts/evm_inspector.py --eip1559-sim --start-fee 20.0 --blocks 5 --fullness 100
 ```
-
----
-
-## 📚 Technical Documentation Directory
-
-- **[`notes/wallets-and-account-abstraction.md`](notes/wallets-and-account-abstraction.md)**: Deep dive into BIP-39/44 derivation, private key cryptography, multi-sig vs MPC, and ERC-4337 account abstraction architecture.
-- **[`notes/networks-mainnet-testnets-l2s.md`](notes/networks-mainnet-testnets-l2s.md)**: Comprehensive guide to L1 settlement, Sepolia/Holesky testnets, Optimistic vs. ZK Rollups, EIP-4844 blobs, and JSON-RPC node architecture.
-- **[`notes/advanced-transaction-mechanics-and-mev.md`](notes/advanced-transaction-mechanics-and-mev.md)**: Detailed transaction lifecycle, MEV (frontrunning, sandwich attacks), EIP-155 replay protection, and mempool nonce handling.
-- **[`notes/blockchain-fundamentals.md`](notes/blockchain-fundamentals.md)**: Cryptographic hashing, consensus mechanisms, and EVM state transition rules.
-- **[`activities/testnet-transaction-lab.md`](activities/testnet-transaction-lab.md)**: Hands-on developer wallet configuration, faucet liquidity acquisition, and EIP-1559 transaction signature dissection.
 
 ---
 
@@ -155,7 +145,9 @@ web3-fundamentals-log/
 ├── foundry.toml                                  # Foundry framework configuration
 ├── .gitignore                                    # Strict secret and environment ignore rules
 ├── contracts/
-│   ├── README.md                                 # Full architecture & Remix deployment guide
+│   ├── README.md                                 # Full architecture & deployment guide
+│   ├── raffle/
+│   │   └── Raffle.sol                            # Provably fair lottery with VRF & Automation
 │   ├── FundMe.sol                                # Crowdfunding with Chainlink & gas patterns
 │   ├── PriceConverter.sol                        # Library for Chainlink AggregatorV3Interface
 │   ├── SimpleStorage.sol                         # Base storage contract (structs, mappings, arrays)
@@ -164,9 +156,11 @@ web3-fundamentals-log/
 │   ├── tokens/
 │   │   └── ManualToken.sol                       # ERC-20 Token Standard from scratch
 │   └── mocks/
-│       └── MockV3Aggregator.sol                  # Mock Chainlink feed for zero-cost local testing
+│       ├── MockVRFCoordinator.sol                # Mock Chainlink VRF for local testing
+│       └── MockV3Aggregator.sol                  # Mock Chainlink Price Feed for local testing
 ├── test/
 │   ├── TestHelpers.sol                           # Minimal Forge VM cheatcode interface
+│   ├── RaffleTest.t.sol                          # Automated unit tests for Raffle & VRF
 │   ├── FundMeTest.t.sol                          # Automated unit tests for FundMe
 │   └── ManualTokenTest.t.sol                     # Automated unit tests for ManualToken ERC-20
 ├── script/
