@@ -24,15 +24,14 @@ Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous
 
 Rather than passive video watching, this repository acts as my **verifiable proof of work**. It includes:
 - **Production Smart Contracts**:
-  - `MerkleAirdrop.sol` & `MerkleProof.sol`: Cryptographic Merkle Tree token distribution verifying $O(\log N)$ membership proofs with $O(1)$ on-chain storage.
-  - `DSCEngine.sol` & `DecentralizedStableCoin.sol`: Algorithmic overcollateralized stablecoin engine with Chainlink price feeds, health factor monitoring, and liquidation mechanics.
-  - `CPAMM.sol`: Constant Product Automated Market Maker DEX with $x \cdot y = k$ invariant pricing, 0.3% liquidity pool fees, and LP share minting/burning.
-  - `ERC1967Proxy.sol`, `BoxV1.sol` & `BoxV2.sol`: Upgradeable proxy patterns using ERC-1967 pseudo-random storage slots and assembly `delegatecall`.
-  - `MoodNft.sol` & `BasicNft.sol`: Fully on-chain dynamic SVG NFTs encoding graphics into Base64 with interactive state toggling.
-  - `Raffle.sol`: Provably fair lottery governed by **Chainlink VRF v2.5** and autonomous **Chainlink Automation** with an enum state machine.
-  - `FundMe.sol`: DeFi crowdfunding with **Chainlink Price Feeds**, custom errors, immutable state, and memory caching (`cheaperWithdraw`).
-  - `ManualToken.sol`: Full **EIP-20** token standard implementation from scratch.
-  - `StorageFactory.sol` & `AddFiveStorage.sol`: On-chain factory deployment and OOP inheritance.
+  - `airdrops/`: Cryptographic Merkle Tree token distribution verifying $O(\log N)$ membership proofs with $O(1)$ on-chain storage.
+  - `defi/`: Algorithmic overcollateralized stablecoin engine (`DSCEngine.sol`) with liquidations, and Constant Product AMM DEX (`CPAMM.sol`).
+  - `upgrades/`: Upgradeable proxy patterns (`ERC1967Proxy.sol`, `BoxV1.sol`, `BoxV2.sol`) with assembly `delegatecall` and state preservation.
+  - `nfts/`: Fully on-chain dynamic SVG NFTs (`MoodNft.sol`, `BasicNft.sol`) encoding graphics into Base64.
+  - `raffle/`: Provably fair lottery (`Raffle.sol`) with **Chainlink VRF v2.5** and **Chainlink Automation**.
+  - `fundme/`: Crowdfunding (`FundMe.sol`) with **Chainlink Price Feeds**, custom errors, and memory caching (`cheaperWithdraw`).
+  - `tokens/`: Full **EIP-20** token standard implementation from scratch (`ManualToken.sol`).
+  - `storage/`: Factory deployment and OOP inheritance (`StorageFactory.sol`, `AddFiveStorage.sol`).
 - **Foundry Invariant Fuzzing & Testing**: Handler-based stateful fuzzing (`test/fuzz/Handler.sol`, `test/fuzz/Invariants.t.sol`) and unit suites validating protocol properties.
 - **Comprehensive Technical Guides**: In-depth analysis of Smart Contract Security (Reentrancy, Oracle Manipulation, Flash Loans), Wallets (EOA vs. ERC-4337), Layer 2 Rollups, EIP-4844 Blobs, and MEV dynamics.
 
@@ -99,7 +98,7 @@ Rather than passive video watching, this repository acts as my **verifiable proo
 ## 🧪 Foundry Automated Testing & Invariant Fuzzing
 
 ```bash
-# Run all unit and invariant tests
+# Run all unit and invariant tests across all suites
 forge test
 
 # Run tests for Merkle Airdrop verification
@@ -133,27 +132,29 @@ web3-fundamentals-log/
 │   ├── airdrops/
 │   │   ├── MerkleProof.sol                       # Cryptographic Merkle proof verifier
 │   │   └── MerkleAirdrop.sol                     # O(1) gas-efficient token airdrop distributor
-│   ├── upgrades/
-│   │   ├── ERC1967Proxy.sol                      # Collision-resistant delegatecall proxy
-│   │   ├── BoxV1.sol                             # Initial logic implementation (v1.0.0)
-│   │   └── BoxV2.sol                             # Upgraded implementation (v2.0.0 + increment)
 │   ├── defi/
 │   │   ├── CPAMM.sol                             # Constant Product Automated Market Maker DEX
 │   │   ├── DSCEngine.sol                         # Core DeFi collateral & liquidation engine
 │   │   └── DecentralizedStableCoin.sol           # Algorithmic pegged ERC-20 stablecoin
+│   ├── fundme/
+│   │   ├── FundMe.sol                            # Crowdfunding with Chainlink & gas patterns
+│   │   └── PriceConverter.sol                    # Library for Chainlink AggregatorV3Interface
 │   ├── nfts/
 │   │   ├── Base64.sol                            # Assembly-level Base64 string encoder
 │   │   ├── BasicNft.sol                          # ERC-721 token standard from scratch
 │   │   └── MoodNft.sol                           # Dynamic on-chain SVG NFT with state flipping
 │   ├── raffle/
 │   │   └── Raffle.sol                            # Provably fair lottery with VRF & Automation
-│   ├── FundMe.sol                                # Crowdfunding with Chainlink & gas patterns
-│   ├── PriceConverter.sol                        # Library for Chainlink AggregatorV3Interface
-│   ├── SimpleStorage.sol                         # Base storage contract (structs, mappings, arrays)
-│   ├── StorageFactory.sol                        # Factory Pattern & contract composability
-│   ├── AddFiveStorage.sol                        # OOP Inheritance & function overriding
+│   ├── storage/
+│   │   ├── SimpleStorage.sol                     # Base storage contract (structs, mappings, arrays)
+│   │   ├── StorageFactory.sol                    # Factory Pattern & contract composability
+│   │   └── AddFiveStorage.sol                    # OOP Inheritance & function overriding
 │   ├── tokens/
 │   │   └── ManualToken.sol                       # ERC-20 Token Standard from scratch
+│   ├── upgrades/
+│   │   ├── ERC1967Proxy.sol                      # Collision-resistant delegatecall proxy
+│   │   ├── BoxV1.sol                             # Initial logic implementation (v1.0.0)
+│   │   └── BoxV2.sol                             # Upgraded implementation (v2.0.0 + increment)
 │   └── mocks/
 │       ├── MockVRFCoordinator.sol                # Mock Chainlink VRF for local testing
 │       └── MockV3Aggregator.sol                  # Mock Chainlink Price Feed for local testing

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {Test, Vm} from "../test/TestHelpers.sol";
-import {FundMe} from "../contracts/FundMe.sol";
+import {FundMe} from "../contracts/fundme/FundMe.sol";
 import {MockV3Aggregator} from "../contracts/mocks/MockV3Aggregator.sol";
 
 /**

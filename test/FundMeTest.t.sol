@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {Test} from "./TestHelpers.sol";
-import {FundMe, FundMe__NotOwner, FundMe__DidNotSendEnoughETH} from "../contracts/FundMe.sol";
+import {FundMe, FundMe__NotOwner, FundMe__DidNotSendEnoughETH} from "../contracts/fundme/FundMe.sol";
 import {MockV3Aggregator} from "../contracts/mocks/MockV3Aggregator.sol";
 
 /**
