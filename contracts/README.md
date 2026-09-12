@@ -10,6 +10,9 @@ This directory contains production-grade Solidity smart contracts developed thro
 +---------------------------------------------------------------------------------+
 |                               Smart Contract Suite                              |
 |                                                                                 |
+|  [ DeFi: Constant Product AMM DEX ]                                             |
+|    defi/CPAMM.sol (x * y = k Invariant, Swaps, 0.3% LP Fees, Liquidity Pools)   |
+|                                                                                 |
 |  [ DeFi: Decentralized Stablecoin Protocol (DSC) ]                              |
 |    AggregatorV3Interface (WETH/USD & WBTC/USD Feeds)                             |
 |           ▲                                                                     |
@@ -55,19 +58,20 @@ This directory contains production-grade Solidity smart contracts developed thro
 
 ## 📄 File Summaries
 
-### 1. [`defi/DSCEngine.sol`](./defi/DSCEngine.sol) & [`defi/DecentralizedStableCoin.sol`](./defi/DecentralizedStableCoin.sol)
-- **Decentralized Algorithmic Stablecoin ($1.00 USD Peg)**:
-  - **Exogenous Multi-Collateral**: Backed by WETH and WBTC.
-  - **Overcollateralization Guard**: Minimum 200% collateralization required (50% liquidation threshold).
-  - **Health Factor Mathematical Engine**: 
-    $$\text{Health Factor} = \frac{\text{Collateral Value in USD} \times 50\%}{\text{Total DSC Minted}}$$
-  - **Permissionless Liquidations**: If Health Factor $< 1.0$, external liquidators burn DSC debt to seize the borrower's collateral with a $10\%$ liquidation bonus.
+### 1. [`defi/CPAMM.sol`](./defi/CPAMM.sol)
+- **Constant Product Automated Market Maker (Uniswap v2 Invariant)**:
+  - Preserves $(x + \Delta x \cdot 0.997) \cdot (y - \Delta y) = k$.
+  - Liquidity management: geometric mean share minting $\sqrt{x \cdot y}$ on genesis deposit and proportional shares on expansion.
+  - Proportional liquidity redemption burning LP shares.
 
-### 2. [`nfts/MoodNft.sol`](./nfts/MoodNft.sol) & [`nfts/BasicNft.sol`](./nfts/BasicNft.sol)
-- **Dynamic On-Chain SVG Artwork**: Encodes raw SVG vector graphics and JSON metadata directly into Base64 strings without IPFS or external servers.
+### 2. [`defi/DSCEngine.sol`](./defi/DSCEngine.sol) & [`defi/DecentralizedStableCoin.sol`](./defi/DecentralizedStableCoin.sol)
+- **Decentralized Algorithmic Stablecoin ($1.00 USD Peg)** with 200% overcollateralization and liquidations.
 
-### 3. [`raffle/Raffle.sol`](./raffle/Raffle.sol)
-- **Provably Fair Lottery**: Guarantees unbiasable winner selection using **Chainlink VRF v2.5** and **Chainlink Automation**.
+### 3. [`nfts/MoodNft.sol`](./nfts/MoodNft.sol) & [`nfts/BasicNft.sol`](./nfts/BasicNft.sol)
+- **Dynamic On-Chain SVG Artwork** with Base64 encoding.
 
-### 4. [`FundMe.sol`](./FundMe.sol)
-- **Decentralized Crowdfunding**: Accepts native ETH contributions with a minimum USD constraint, custom errors, and memory caching (`cheaperWithdraw`).
+### 4. [`raffle/Raffle.sol`](./raffle/Raffle.sol)
+- **Provably Fair Lottery** using Chainlink VRF v2.5 and Chainlink Automation.
+
+### 5. [`FundMe.sol`](./FundMe.sol) & [`tokens/ManualToken.sol`](./tokens/ManualToken.sol)
+- Crowdfunding oracle contract and native ERC-20 implementation.

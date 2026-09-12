@@ -1,10 +1,11 @@
 # ⛓️ Web3 Fundamentals Log
 
-> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), DeFi Stablecoin Protocols (DSC Engine), Dynamic On-Chain NFTs (ERC-721), Provably Fair Lotteries (Chainlink VRF & Automation), Token Standards (ERC-20), and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
+> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), AMM Decentralized Exchanges (CPAMM), DeFi Stablecoins (DSC Engine), Dynamic On-Chain NFTs (ERC-721), Provably Fair Lotteries (Chainlink VRF & Automation), Token Standards (ERC-20), and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
 
 [![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
 [![Foundry](https://img.shields.io/badge/Framework-Foundry-red?style=flat-square&logo=ethereum)](test/)
+[![DEX AMM](https://img.shields.io/badge/DeFi-Constant%20Product%20AMM%20(DEX)-blue?style=flat-square)](contracts/defi/CPAMM.sol)
 [![DeFi Protocol](https://img.shields.io/badge/DeFi-Decentralized%20Stablecoin%20(DSC)-gold?style=flat-square)](contracts/defi/DSCEngine.sol)
 [![NFTs](https://img.shields.io/badge/Standard-ERC--721%20On--Chain%20SVG-green?style=flat-square)](contracts/nfts/MoodNft.sol)
 [![Chainlink VRF](https://img.shields.io/badge/Chainlink-VRF%20v2.5%20%26%20Automation-375BD2?style=flat-square&logo=chainlink&logoColor=white)](contracts/raffle/Raffle.sol)
@@ -20,13 +21,14 @@ Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous
 
 Rather than passive video watching, this repository acts as my **verifiable proof of work**. It includes:
 - **Production Smart Contracts**:
+  - `CPAMM.sol`: Constant Product Automated Market Maker DEX with $x \cdot y = k$ invariant pricing, 0.3% liquidity pool fees, and LP share minting/burning.
   - `DSCEngine.sol` & `DecentralizedStableCoin.sol`: Algorithmic overcollateralized stablecoin engine with Chainlink price feeds, health factor monitoring, and liquidation mechanics.
   - `MoodNft.sol` & `BasicNft.sol`: Fully on-chain dynamic SVG NFTs encoding graphics into Base64 with interactive state toggling.
   - `Raffle.sol`: Provably fair lottery governed by **Chainlink VRF v2.5** and autonomous **Chainlink Automation** with an enum state machine.
   - `FundMe.sol`: DeFi crowdfunding with **Chainlink Price Feeds**, custom errors, immutable state, and memory caching (`cheaperWithdraw`).
   - `ManualToken.sol`: Full **EIP-20** token standard implementation from scratch.
   - `StorageFactory.sol` & `AddFiveStorage.sol`: On-chain factory deployment and OOP inheritance.
-- **Foundry Unit Testing & Deployment**: Comprehensive Forge test suites (`test/DSCEngineTest.t.sol`, `test/NftTest.t.sol`, `test/RaffleTest.t.sol`, `test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`) with cheatcodes (`vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`).
+- **Foundry Unit Testing & Deployment**: Comprehensive Forge test suites (`test/CPAMMTest.t.sol`, `test/DSCEngineTest.t.sol`, `test/NftTest.t.sol`, `test/RaffleTest.t.sol`, `test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`) with cheatcodes (`vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`).
 - **Comprehensive Technical Guides**: In-depth analysis of Wallets (EOA vs. Smart Account ERC-4337, MPC, Multisig), Layer 2 Rollups (Optimistic vs. ZK), EIP-4844 Blobs, and MEV dynamics.
 - **Developer CLI Utilities**: Standalone Python tooling (`scripts/evm_inspector.py`) to simulate EIP-1559 base fee burns, calculate L2 rollup execution/blob fees, and compute mempool speed-up gas requirements.
 
@@ -75,8 +77,11 @@ Rather than passive video watching, this repository acts as my **verifiable proo
   - [x] Multi-collateral exogenous backing (WETH / WBTC)
   - [x] Chainlink Price Feed valuation & 200% Overcollateralization health factor engine
   - [x] Permissionless liquidation engine with 10% bonus incentive for liquidators
-- [x] **Module 11: Comprehensive Foundry Testing & Deployment**
-  - [x] Forge unit tests: `DSCEngineTest.t.sol`, `NftTest.t.sol`, `RaffleTest.t.sol`, `FundMeTest.t.sol`, `ManualTokenTest.t.sol`
+- [x] **Module 11: Constant Product Automated Market Maker DEX (`CPAMM.sol`)**
+  - [x] Uniswap v2 core math: $(x + \Delta x \cdot 0.997) \cdot (y - \Delta y) = x \cdot y$
+  - [x] Liquidity provisioning, geometric mean share minting $\sqrt{x \cdot y}$, and burning
+- [x] **Module 12: Comprehensive Foundry Testing & Deployment**
+  - [x] Forge unit tests: `CPAMMTest.t.sol`, `DSCEngineTest.t.sol`, `NftTest.t.sol`, `RaffleTest.t.sol`, `FundMeTest.t.sol`, `ManualTokenTest.t.sol`
 
 ---
 
@@ -87,6 +92,9 @@ Located in [`/contracts`](contracts/):
 ```
 +---------------------------------------------------------------------------------+
 |                               Smart Contract Suite                              |
+|                                                                                 |
+|  [ DeFi: Constant Product AMM DEX ]                                             |
+|    defi/CPAMM.sol (x * y = k Invariant, Swaps, 0.3% LP Fees, Liquidity Pools)   |
 |                                                                                 |
 |  [ DeFi: Decentralized Stablecoin Protocol (DSC) ]                              |
 |    AggregatorV3Interface (WETH/USD & WBTC/USD Feeds)                             |
@@ -137,6 +145,9 @@ Located in [`/contracts`](contracts/):
 # Run all unit tests across all suites
 forge test
 
+# Run tests for Constant Product AMM DEX
+forge test --match-contract CPAMMTest -vvv
+
 # Run tests for the DeFi Stablecoin Engine
 forge test --match-contract DSCEngineTest -vvv
 
@@ -163,6 +174,7 @@ web3-fundamentals-log/
 ├── contracts/
 │   ├── README.md                                 # Full architecture & deployment guide
 │   ├── defi/
+│   │   ├── CPAMM.sol                             # Constant Product Automated Market Maker DEX
 │   │   ├── DSCEngine.sol                         # Core DeFi collateral & liquidation engine
 │   │   └── DecentralizedStableCoin.sol           # Algorithmic pegged ERC-20 stablecoin
 │   ├── nfts/
@@ -183,6 +195,7 @@ web3-fundamentals-log/
 │       └── MockV3Aggregator.sol                  # Mock Chainlink Price Feed for local testing
 ├── test/
 │   ├── TestHelpers.sol                           # Minimal Forge VM cheatcode interface
+│   ├── CPAMMTest.t.sol                           # Automated unit tests for AMM DEX
 │   ├── DSCEngineTest.t.sol                       # Automated unit tests for DeFi DSC Protocol
 │   ├── NftTest.t.sol                             # Automated unit tests for ERC-721 and Mood NFT
 │   ├── RaffleTest.t.sol                          # Automated unit tests for Raffle & VRF
