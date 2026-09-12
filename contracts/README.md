@@ -10,6 +10,9 @@ This directory contains production-grade Solidity smart contracts developed thro
 +---------------------------------------------------------------------------------+
 |                               Smart Contract Suite                              |
 |                                                                                 |
+|  [ Multi-Sig & Treasury Governance Suite ]                                      |
+|    multisig/MultiSigWallet.sol (M-of-N Threshold Treasury & Arbitrary Execution)|
+|                                                                                 |
 |  [ Cryptographic Airdrops Suite ]                                               |
 |    airdrops/MerkleProof.sol (Commutative Sorted Merkle Proof Verifier)          |
 |           ▲                                                                     |
@@ -69,13 +72,14 @@ This directory contains production-grade Solidity smart contracts developed thro
 
 | Module | File(s) | Description & Key Patterns |
 |---|---|---|
-| **Storage** | `storage/SimpleStorage.sol`, `storage/StorageFactory.sol`, `storage/AddFiveStorage.sol` | State variables, structs, mappings, arrays, Factory pattern (`new`), and OOP inheritance (`virtual`/`override`). |
-| **Crowdfunding** | `fundme/FundMe.sol`, `fundme/PriceConverter.sol` | Chainlink Price Feed oracle, custom errors (EIP-838), immutable state, and `cheaperWithdraw()` memory-caching. |
-| **Tokens** | `tokens/ManualToken.sol` | Full EIP-20 standard from scratch: balances, allowances, and custom errors. |
-| **Lottery** | `raffle/Raffle.sol` | Provably fair lottery with Chainlink VRF v2.5 and Chainlink Automation state machine. |
-| **NFTs** | `nfts/BasicNft.sol`, `nfts/MoodNft.sol`, `nfts/Base64.sol` | ERC-721 token standard & dynamic on-chain SVG artwork with assembly Base64 encoding. |
-| **DeFi Stablecoin** | `defi/DSCEngine.sol`, `defi/DecentralizedStableCoin.sol` | Multi-collateral 200% overcollateralized stablecoin with liquidation engine and health factor math. |
-| **DeFi AMM DEX** | `defi/CPAMM.sol` | Constant Product Automated Market Maker ($x \cdot y = k$) with 0.3% LP fees. |
-| **Upgradeability** | `upgrades/ERC1967Proxy.sol`, `upgrades/BoxV1.sol`, `upgrades/BoxV2.sol` | Collision-resistant ERC-1967 proxy with assembly `delegatecall` and state preservation. |
+| **Multi-Sig** | `multisig/MultiSigWallet.sol` | $M$-of-$N$ threshold multi-signature treasury wallet with low-level execution dispatching. |
 | **Airdrops** | `airdrops/MerkleAirdrop.sol`, `airdrops/MerkleProof.sol` | Cryptographic Merkle Tree airdrop distributor with $O(1)$ storage and $O(\log N)$ proof verification. |
+| **Upgradeability** | `upgrades/ERC1967Proxy.sol`, `upgrades/BoxV1.sol`, `upgrades/BoxV2.sol` | Collision-resistant ERC-1967 proxy with assembly `delegatecall` and state preservation. |
+| **DeFi AMM DEX** | `defi/CPAMM.sol` | Constant Product Automated Market Maker ($x \cdot y = k$) with 0.3% LP fees. |
+| **DeFi Stablecoin** | `defi/DSCEngine.sol`, `defi/DecentralizedStableCoin.sol` | Multi-collateral 200% overcollateralized stablecoin with liquidation engine and health factor math. |
+| **NFTs** | `nfts/BasicNft.sol`, `nfts/MoodNft.sol`, `nfts/Base64.sol` | ERC-721 token standard & dynamic on-chain SVG artwork with assembly Base64 encoding. |
+| **Lottery** | `raffle/Raffle.sol` | Provably fair lottery with Chainlink VRF v2.5 and Chainlink Automation state machine. |
+| **Tokens** | `tokens/ManualToken.sol` | Full EIP-20 standard from scratch: balances, allowances, and custom errors. |
+| **Crowdfunding** | `fundme/FundMe.sol`, `fundme/PriceConverter.sol` | Chainlink Price Feed oracle, custom errors (EIP-838), and `cheaperWithdraw()` memory-caching. |
+| **Storage** | `storage/SimpleStorage.sol`, `storage/StorageFactory.sol`, `storage/AddFiveStorage.sol` | State variables, structs, mappings, arrays, Factory pattern, and inheritance. |
 | **Mocks** | `mocks/MockV3Aggregator.sol`, `mocks/MockVRFCoordinator.sol` | Mock oracles for offline Foundry testing. |
