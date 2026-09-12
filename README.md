@@ -2,11 +2,12 @@
 
 > A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Cryptographic Merkle Airdrops, Smart Contract Security & Invariant Fuzzing, Upgradeable Proxies (ERC-1967), AMM DEX Protocols (CPAMM), DeFi Stablecoins (DSC Engine), Dynamic On-Chain NFTs (ERC-721), and Provably Fair Lotteries (Chainlink VRF & Automation).
 
+[![CI](https://github.com/totaliyahtrash/web3-fundamentals-log/actions/workflows/test.yml/badge.svg)](https://github.com/totaliyahtrash/web3-fundamentals-log/actions)
 [![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
 [![Foundry](https://img.shields.io/badge/Framework-Foundry-red?style=flat-square&logo=ethereum)](test/)
-[![Merkle Airdrop](https://img.shields.io/badge/Cryptography-Merkle%20Tree%20Airdrop-teal?style=flat-square)](contracts/airdrops/MerkleAirdrop.sol)
 [![Security & Invariants](https://img.shields.io/badge/Security-Invariant%20Fuzzing-critical?style=flat-square)](notes/smart-contract-security-and-auditing.md)
+[![Merkle Airdrop](https://img.shields.io/badge/Cryptography-Merkle%20Tree%20Airdrop-teal?style=flat-square)](contracts/airdrops/MerkleAirdrop.sol)
 [![Proxies](https://img.shields.io/badge/Pattern-ERC--1967%20Upgradeable%20Proxies-blueviolet?style=flat-square)](contracts/upgrades/ERC1967Proxy.sol)
 [![DEX AMM](https://img.shields.io/badge/DeFi-Constant%20Product%20AMM%20(DEX)-blue?style=flat-square)](contracts/defi/CPAMM.sol)
 [![DeFi Protocol](https://img.shields.io/badge/DeFi-Decentralized%20Stablecoin%20(DSC)-gold?style=flat-square)](contracts/defi/DSCEngine.sol)
@@ -33,7 +34,7 @@ Rather than passive video watching, this repository acts as my **verifiable proo
   - `tokens/`: Full **EIP-20** token standard implementation from scratch (`ManualToken.sol`).
   - `storage/`: Factory deployment and OOP inheritance (`StorageFactory.sol`, `AddFiveStorage.sol`).
 - **Foundry Invariant Fuzzing & Testing**: Handler-based stateful fuzzing (`test/fuzz/Handler.sol`, `test/fuzz/Invariants.t.sol`) and unit suites validating protocol properties.
-- **Comprehensive Technical Guides**: In-depth analysis of Smart Contract Security (Reentrancy, Oracle Manipulation, Flash Loans), Wallets (EOA vs. ERC-4337), Layer 2 Rollups, EIP-4844 Blobs, and MEV dynamics.
+- **CI/CD Automation & Developer Workflows**: Fully configured GitHub Actions pipeline (`.github/workflows/test.yml`) running test suites and bytecode size assertions on every commit.
 
 ---
 
@@ -95,26 +96,28 @@ Rather than passive video watching, this repository acts as my **verifiable proo
 
 ---
 
-## 🧪 Foundry Automated Testing & Invariant Fuzzing
+## 🛠️ Quickstart & Makefile Commands
+
+This repository includes a convenient **`Makefile`** automating common development tasks:
 
 ```bash
-# Run all unit and invariant tests across all suites
-forge test
+# Compile contracts and inspect bytecode size
+make build
 
-# Run tests for Merkle Airdrop verification
-forge test --match-contract MerkleAirdropTest -vvv
+# Run full Foundry test suite
+make test
 
-# Run stateful invariant fuzz testing with detailed trace
-forge test --match-contract InvariantsTest -vvvv
+# Run stateful invariant fuzz testing
+make test-fuzz
 
-# Run tests for Upgradeable Proxies
-forge test --match-contract UpgradeTest -vvv
+# Generate gas usage snapshot report
+make snapshot
 
-# Run tests for Constant Product AMM DEX
-forge test --match-contract CPAMMTest -vvv
+# Format Solidity codebase
+make format
 
-# Run gas snapshot analysis
-forge snapshot
+# Run local EVM Inspector Python tool
+make inspect
 ```
 
 ---
@@ -125,54 +128,37 @@ forge snapshot
 web3-fundamentals-log/
 ├── README.md                                     # Master documentation, architecture & roadmap
 ├── LICENSE                                       # Open-source MIT License
+├── Makefile                                      # Web3 developer workflow automation shortcuts
+├── SECURITY.md                                   # Security policy & vulnerability reporting
 ├── foundry.toml                                  # Foundry framework & invariant configuration
 ├── .gitignore                                    # Strict secret and environment ignore rules
+├── .github/
+│   └── workflows/
+│       └── test.yml                              # Continuous Integration (CI) test pipeline
 ├── contracts/
 │   ├── README.md                                 # Full architecture & deployment guide
-│   ├── airdrops/
-│   │   ├── MerkleProof.sol                       # Cryptographic Merkle proof verifier
-│   │   └── MerkleAirdrop.sol                     # O(1) gas-efficient token airdrop distributor
-│   ├── defi/
-│   │   ├── CPAMM.sol                             # Constant Product Automated Market Maker DEX
-│   │   ├── DSCEngine.sol                         # Core DeFi collateral & liquidation engine
-│   │   └── DecentralizedStableCoin.sol           # Algorithmic pegged ERC-20 stablecoin
-│   ├── fundme/
-│   │   ├── FundMe.sol                            # Crowdfunding with Chainlink & gas patterns
-│   │   └── PriceConverter.sol                    # Library for Chainlink AggregatorV3Interface
-│   ├── nfts/
-│   │   ├── Base64.sol                            # Assembly-level Base64 string encoder
-│   │   ├── BasicNft.sol                          # ERC-721 token standard from scratch
-│   │   └── MoodNft.sol                           # Dynamic on-chain SVG NFT with state flipping
-│   ├── raffle/
-│   │   └── Raffle.sol                            # Provably fair lottery with VRF & Automation
-│   ├── storage/
-│   │   ├── SimpleStorage.sol                     # Base storage contract (structs, mappings, arrays)
-│   │   ├── StorageFactory.sol                    # Factory Pattern & contract composability
-│   │   └── AddFiveStorage.sol                    # OOP Inheritance & function overriding
-│   ├── tokens/
-│   │   └── ManualToken.sol                       # ERC-20 Token Standard from scratch
-│   ├── upgrades/
-│   │   ├── ERC1967Proxy.sol                      # Collision-resistant delegatecall proxy
-│   │   ├── BoxV1.sol                             # Initial logic implementation (v1.0.0)
-│   │   └── BoxV2.sol                             # Upgraded implementation (v2.0.0 + increment)
-│   └── mocks/
-│       ├── MockVRFCoordinator.sol                # Mock Chainlink VRF for local testing
-│       └── MockV3Aggregator.sol                  # Mock Chainlink Price Feed for local testing
+│   ├── airdrops/                                 # Merkle Airdrop & Proof verification
+│   ├── defi/                                     # DSCEngine Stablecoin & CPAMM DEX
+│   ├── fundme/                                   # FundMe & PriceConverter Oracle Library
+│   ├── nfts/                                     # ERC-721 BasicNft, Dynamic MoodNft & Base64
+│   ├── raffle/                                   # Provably Fair Lottery with VRF & Automation
+│   ├── storage/                                  # SimpleStorage, StorageFactory, AddFiveStorage
+│   ├── tokens/                                   # ERC-20 ManualToken Standard from scratch
+│   ├── upgrades/                                 # ERC-1967 Proxies, BoxV1, BoxV2
+│   └── mocks/                                    # Mock VRF & Price Feed Aggregators
 ├── test/
-│   ├── TestHelpers.sol                           # Minimal Forge VM cheatcode interface
-│   ├── fuzz/
-│   │   ├── Handler.sol                           # Action bounding handler for stateful fuzzing
-│   │   └── Invariants.t.sol                      # Core protocol mathematical invariant test suite
-│   ├── MerkleAirdropTest.t.sol                   # Automated unit tests for Merkle Tree Airdrops
-│   ├── UpgradeTest.t.sol                         # Automated unit tests for ERC-1967 Proxies
-│   ├── CPAMMTest.t.sol                           # Automated unit tests for AMM DEX
-│   ├── DSCEngineTest.t.sol                       # Automated unit tests for DeFi DSC Protocol
-│   ├── NftTest.t.sol                             # Automated unit tests for ERC-721 and Mood NFT
-│   ├── RaffleTest.t.sol                          # Automated unit tests for Raffle & VRF
-│   ├── FundMeTest.t.sol                          # Automated unit tests for FundMe
-│   └── ManualTokenTest.t.sol                     # Automated unit tests for ManualToken ERC-20
+│   ├── fuzz/                                     # Stateful Invariant Fuzz Testing (Invariants, Handler)
+│   ├── MerkleAirdropTest.t.sol                   # Merkle Proof airdrop tests
+│   ├── UpgradeTest.t.sol                         # ERC-1967 Proxy upgrade & state preservation tests
+│   ├── CPAMMTest.t.sol                           # AMM DEX x*y=k unit tests
+│   ├── DSCEngineTest.t.sol                       # DeFi Stablecoin & health factor tests
+│   ├── NftTest.t.sol                             # ERC-721 and dynamic SVG tests
+│   ├── RaffleTest.t.sol                          # Raffle & VRF fulfillment tests
+│   ├── FundMeTest.t.sol                          # FundMe oracle & withdrawal tests
+│   ├── ManualTokenTest.t.sol                     # ERC-20 transfer & allowance tests
+│   └── TestHelpers.sol                           # Minimal Forge VM cheatcode interface
 ├── script/
-│   └── DeployFundMe.s.sol                        # Scripted multi-chain broadcast deployment
+│   └── DeployFundMe.s.sol                        # Automated multi-network broadcast deployment
 ├── scripts/
 │   └── evm_inspector.py                          # CLI utility for EIP-1559, L2 fees, and speedups
 ├── activities/

@@ -1,0 +1,49 @@
+name: Continuous Integration & Automated Testing
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  forge-tests:
+    name: Foundry Test Suite & Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry Toolchain
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Inspect Foundry Version
+        run: forge --version
+
+      - name: Compile Contracts & Check Bytecode Sizes
+        run: forge build --sizes
+
+      - name: Run Foundry Unit & Invariant Test Suites
+        run: forge test -vvv
+
+      - name: Run Gas Snapshots
+        run: forge snapshot --check
+
+  python-tooling-check:
+    name: EVM Inspector CLI Tool Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run EVM Inspector CLI Tests
+        run: python3 scripts/evm_inspector.py
