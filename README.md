@@ -1,10 +1,11 @@
 # ⛓️ Web3 Fundamentals Log
 
-> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Smart Contract Upgradeability (ERC-1967 Proxies), AMM Decentralized Exchanges (CPAMM), DeFi Stablecoins (DSC Engine), Dynamic On-Chain NFTs (ERC-721), Provably Fair Lotteries (Chainlink VRF & Automation), Token Standards (ERC-20), and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
+> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Smart Contract Security & Invariant Fuzzing, Upgradeable Proxies (ERC-1967), AMM DEX Protocols (CPAMM), DeFi Stablecoins (DSC Engine), Dynamic On-Chain NFTs (ERC-721), and Provably Fair Lotteries (Chainlink VRF & Automation).
 
 [![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
 [![Foundry](https://img.shields.io/badge/Framework-Foundry-red?style=flat-square&logo=ethereum)](test/)
+[![Security & Invariants](https://img.shields.io/badge/Security-Invariant%20Fuzzing-critical?style=flat-square)](notes/smart-contract-security-and-auditing.md)
 [![Proxies](https://img.shields.io/badge/Pattern-ERC--1967%20Upgradeable%20Proxies-blueviolet?style=flat-square)](contracts/upgrades/ERC1967Proxy.sol)
 [![DEX AMM](https://img.shields.io/badge/DeFi-Constant%20Product%20AMM%20(DEX)-blue?style=flat-square)](contracts/defi/CPAMM.sol)
 [![DeFi Protocol](https://img.shields.io/badge/DeFi-Decentralized%20Stablecoin%20(DSC)-gold?style=flat-square)](contracts/defi/DSCEngine.sol)
@@ -18,21 +19,20 @@
 
 ## 🎯 About This Repository
 
-Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous technical journey from core cryptographic principles to composable on-chain architectures.
+Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous technical journey from core cryptographic principles to audited, invariant-tested DeFi protocols.
 
 Rather than passive video watching, this repository acts as my **verifiable proof of work**. It includes:
 - **Production Smart Contracts**:
-  - `ERC1967Proxy.sol`, `BoxV1.sol` & `BoxV2.sol`: Upgradeable proxy patterns using ERC-1967 pseudo-random storage slots and assembly `delegatecall`.
-  - `CPAMM.sol`: Constant Product Automated Market Maker DEX with $x \cdot y = k$ invariant pricing, 0.3% liquidity pool fees, and LP share minting/burning.
   - `DSCEngine.sol` & `DecentralizedStableCoin.sol`: Algorithmic overcollateralized stablecoin engine with Chainlink price feeds, health factor monitoring, and liquidation mechanics.
+  - `CPAMM.sol`: Constant Product Automated Market Maker DEX with $x \cdot y = k$ invariant pricing, 0.3% liquidity pool fees, and LP share minting/burning.
+  - `ERC1967Proxy.sol`, `BoxV1.sol` & `BoxV2.sol`: Upgradeable proxy patterns using ERC-1967 pseudo-random storage slots and assembly `delegatecall`.
   - `MoodNft.sol` & `BasicNft.sol`: Fully on-chain dynamic SVG NFTs encoding graphics into Base64 with interactive state toggling.
   - `Raffle.sol`: Provably fair lottery governed by **Chainlink VRF v2.5** and autonomous **Chainlink Automation** with an enum state machine.
   - `FundMe.sol`: DeFi crowdfunding with **Chainlink Price Feeds**, custom errors, immutable state, and memory caching (`cheaperWithdraw`).
   - `ManualToken.sol`: Full **EIP-20** token standard implementation from scratch.
   - `StorageFactory.sol` & `AddFiveStorage.sol`: On-chain factory deployment and OOP inheritance.
-- **Foundry Unit Testing & Deployment**: Comprehensive Forge test suites (`test/UpgradeTest.t.sol`, `test/CPAMMTest.t.sol`, `test/DSCEngineTest.t.sol`, `test/NftTest.t.sol`, `test/RaffleTest.t.sol`, `test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`) with cheatcodes (`vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`).
-- **Comprehensive Technical Guides**: In-depth analysis of Wallets (EOA vs. Smart Account ERC-4337, MPC, Multisig), Layer 2 Rollups (Optimistic vs. ZK), EIP-4844 Blobs, and MEV dynamics.
-- **Developer CLI Utilities**: Standalone Python tooling (`scripts/evm_inspector.py`) to simulate EIP-1559 base fee burns, calculate L2 rollup execution/blob fees, and compute mempool speed-up gas requirements.
+- **Foundry Invariant Fuzzing & Testing**: Handler-based stateful fuzzing (`test/fuzz/Handler.sol`, `test/fuzz/Invariants.t.sol`) validating protocol-wide mathematical invariants across millions of randomized interaction sequences.
+- **Comprehensive Technical Guides**: In-depth analysis of Smart Contract Security (Reentrancy, Oracle Manipulation, Flash Loans), Wallets (EOA vs. ERC-4337), Layer 2 Rollups, EIP-4844 Blobs, and MEV dynamics.
 
 ---
 
@@ -85,76 +85,20 @@ Rather than passive video watching, this repository acts as my **verifiable proo
 - [x] **Module 12: Smart Contract Upgradeability & Proxies (ERC-1967)**
   - [x] Storage collision prevention with standardized slots (`keccak256("eip1967.proxy.implementation") - 1`)
   - [x] Assembly `delegatecall` dispatcher and state preservation validation across version upgrades
-- [x] **Module 13: Comprehensive Foundry Testing & Deployment**
-  - [x] Forge unit tests: `UpgradeTest.t.sol`, `CPAMMTest.t.sol`, `DSCEngineTest.t.sol`, `NftTest.t.sol`, `RaffleTest.t.sol`, `FundMeTest.t.sol`, `ManualTokenTest.t.sol`
+- [x] **Module 13: Smart Contract Security, Auditing & Invariant Fuzzing**
+  - [x] Threat models: Reentrancy (CEI pattern), Oracle Manipulation, Flash Loans, and Precision Loss
+  - [x] Stateful Property-Based Invariant Fuzzing with Foundry (`test/fuzz/Invariants.t.sol`)
 
 ---
 
-## 🏗️ Smart Contracts Architecture
-
-Located in [`/contracts`](contracts/):
-
-```
-+---------------------------------------------------------------------------------+
-|                               Smart Contract Suite                              |
-|                                                                                 |
-|  [ Smart Contract Upgradeability Suite ]                                        |
-|    ERC1967Proxy.sol (Standardized Storage Slot Delegatecall Proxy)              |
-|           │ (Delegatecall dispatching)                                          |
-|           ├──► upgrades/BoxV1.sol (Initial logic & storage layout: version 1.0) |
-|           └──► upgrades/BoxV2.sol (Upgraded logic + increment(): version 2.0)   |
-|                                                                                 |
-|  [ DeFi: Constant Product AMM DEX ]                                             |
-|    defi/CPAMM.sol (x * y = k Invariant, Swaps, 0.3% LP Fees, Liquidity Pools)   |
-|                                                                                 |
-|  [ DeFi: Decentralized Stablecoin Protocol (DSC) ]                              |
-|    AggregatorV3Interface (WETH/USD & WBTC/USD Feeds)                             |
-|           ▲                                                                     |
-|           │                                                                     |
-|    defi/DSCEngine.sol (Collateral, Health Factors, Liquidations, Mint/Burn)     |
-|           │                                                                     |
-|           ▼ (Mints / Burns pegged $1.00 USD Stablecoin)                         |
-|    defi/DecentralizedStableCoin.sol                                             |
-|                                                                                 |
-|  [ Dynamic On-Chain NFT Suite ]                                                 |
-|    Base64.sol (Gas-efficient assembly Base64 encoder)                          |
-|           ▲                                                                     |
-|           │                                                                     |
-|    BasicNft.sol (ERC-721 Standard from scratch)                                 |
-|           ▲                                                                     |
-|           └─── (Inherits) ─── MoodNft.sol (On-Chain Dynamic SVG NFT)            |
-|                                                                                 |
-|  [ Provably Fair Lottery Suite ]                                                |
-|    Chainlink VRF Coordinator (Verifiable Random Function v2.5)                   |
-|           ▲                                                                     |
-|           │ (Delivers Cryptographic Randomness)                                 |
-|    Chainlink Automation (Decentralized Time & State Trigger)                    |
-|           ▲                                                                     |
-|           │ (Triggers checkUpkeep -> performUpkeep)                             |
-|    raffle/Raffle.sol (Autonomous Provably Fair Lottery with Enum State Machine) |
-|                                                                                 |
-|  [ Oracle & DeFi Crowdfunding Suite ]                                           |
-|    PriceConverter.sol (Library: using PriceConverter for uint256)               |
-|           ▲                                                                     |
-|    FundMe.sol (Crowdfunding with Custom Errors & Gas-Optimized Memory Caching)   |
-|                                                                                 |
-|  [ Token Standards Suite ]                                                      |
-|    tokens/ManualToken.sol (EIP-20 Standard from scratch with custom errors)     |
-|                                                                                 |
-|  [ Foundational Storage Suite ]                                                 |
-|    SimpleStorage.sol  <─── (Inherits) ───  AddFiveStorage.sol                   |
-|           ▲                                                                     |
-|           └────────── (Deploys & Calls) ─── StorageFactory.sol                  |
-+---------------------------------------------------------------------------------+
-```
-
----
-
-## 🧪 Foundry Automated Testing & Deployment
+## 🧪 Foundry Automated Testing & Invariant Fuzzing
 
 ```bash
-# Run all unit tests across all suites
+# Run all unit and invariant tests
 forge test
+
+# Run stateful invariant fuzz testing with detailed trace
+forge test --match-contract InvariantsTest -vvvv
 
 # Run tests for Upgradeable Proxies
 forge test --match-contract UpgradeTest -vvv
@@ -162,18 +106,20 @@ forge test --match-contract UpgradeTest -vvv
 # Run tests for Constant Product AMM DEX
 forge test --match-contract CPAMMTest -vvv
 
-# Run tests for the DeFi Stablecoin Engine
-forge test --match-contract DSCEngineTest -vvv
-
-# Run tests for Dynamic SVG NFTs
-forge test --match-contract NftTest -vvv
-
-# Run tests for Raffle with execution traces
-forge test --match-contract RaffleTest -vvvv
-
 # Run gas snapshot analysis
 forge snapshot
 ```
+
+---
+
+## 📚 Technical Documentation Directory
+
+- **[`notes/smart-contract-security-and-auditing.md`](notes/smart-contract-security-and-auditing.md)**: Master auditing guide covering Reentrancy (Checks-Effects-Interactions), Oracle Manipulation, Flash Loans, Precision Loss, and Invariant Fuzzing.
+- **[`notes/wallets-and-account-abstraction.md`](notes/wallets-and-account-abstraction.md)**: Deep dive into BIP-39/44 derivation, private key cryptography, multi-sig vs MPC, and ERC-4337 account abstraction architecture.
+- **[`notes/networks-mainnet-testnets-l2s.md`](notes/networks-mainnet-testnets-l2s.md)**: Comprehensive guide to L1 settlement, Sepolia/Holesky testnets, Optimistic vs. ZK Rollups, EIP-4844 blobs, and JSON-RPC node architecture.
+- **[`notes/advanced-transaction-mechanics-and-mev.md`](notes/advanced-transaction-mechanics-and-mev.md)**: Detailed transaction lifecycle, MEV (frontrunning, sandwich attacks), EIP-155 replay protection, and mempool nonce handling.
+- **[`notes/blockchain-fundamentals.md`](notes/blockchain-fundamentals.md)**: Cryptographic hashing, consensus mechanisms, and EVM state transition rules.
+- **[`activities/testnet-transaction-lab.md`](activities/testnet-transaction-lab.md)**: Hands-on developer wallet configuration, faucet liquidity acquisition, and EIP-1559 transaction signature dissection.
 
 ---
 
@@ -183,7 +129,7 @@ forge snapshot
 web3-fundamentals-log/
 ├── README.md                                     # Master documentation, architecture & roadmap
 ├── LICENSE                                       # Open-source MIT License
-├── foundry.toml                                  # Foundry framework configuration
+├── foundry.toml                                  # Foundry framework & invariant configuration
 ├── .gitignore                                    # Strict secret and environment ignore rules
 ├── contracts/
 │   ├── README.md                                 # Full architecture & deployment guide
@@ -213,6 +159,9 @@ web3-fundamentals-log/
 │       └── MockV3Aggregator.sol                  # Mock Chainlink Price Feed for local testing
 ├── test/
 │   ├── TestHelpers.sol                           # Minimal Forge VM cheatcode interface
+│   ├── fuzz/
+│   │   ├── Handler.sol                           # Action bounding handler for stateful fuzzing
+│   │   └── Invariants.t.sol                      # Core protocol mathematical invariant test suite
 │   ├── UpgradeTest.t.sol                         # Automated unit tests for ERC-1967 Proxies
 │   ├── CPAMMTest.t.sol                           # Automated unit tests for AMM DEX
 │   ├── DSCEngineTest.t.sol                       # Automated unit tests for DeFi DSC Protocol
@@ -227,6 +176,7 @@ web3-fundamentals-log/
 ├── activities/
 │   └── testnet-transaction-lab.md                # Wallet setup, faucet mechanics & tx dissection lab
 └── notes/
+    ├── smart-contract-security-and-auditing.md   # Reentrancy, oracle attacks, CEI, and invariant fuzzing
     ├── wallets-and-account-abstraction.md        # Cryptography, HD paths, MPC, and ERC-4337
     ├── networks-mainnet-testnets-l2s.md          # L1 vs L2 rollups, EIP-4844 blobs, and JSON-RPC
     ├── advanced-transaction-mechanics-and-mev.md # Mempool lifecycle, MEV attacks, and EIP-155
