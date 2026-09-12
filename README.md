@@ -1,10 +1,11 @@
 # ⛓️ Web3 Fundamentals Log
 
-> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Smart Contract Security & Invariant Fuzzing, Upgradeable Proxies (ERC-1967), AMM DEX Protocols (CPAMM), DeFi Stablecoins (DSC Engine), Dynamic On-Chain NFTs (ERC-721), and Provably Fair Lotteries (Chainlink VRF & Automation).
+> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Cryptographic Merkle Airdrops, Smart Contract Security & Invariant Fuzzing, Upgradeable Proxies (ERC-1967), AMM DEX Protocols (CPAMM), DeFi Stablecoins (DSC Engine), Dynamic On-Chain NFTs (ERC-721), and Provably Fair Lotteries (Chainlink VRF & Automation).
 
 [![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
 [![Foundry](https://img.shields.io/badge/Framework-Foundry-red?style=flat-square&logo=ethereum)](test/)
+[![Merkle Airdrop](https://img.shields.io/badge/Cryptography-Merkle%20Tree%20Airdrop-teal?style=flat-square)](contracts/airdrops/MerkleAirdrop.sol)
 [![Security & Invariants](https://img.shields.io/badge/Security-Invariant%20Fuzzing-critical?style=flat-square)](notes/smart-contract-security-and-auditing.md)
 [![Proxies](https://img.shields.io/badge/Pattern-ERC--1967%20Upgradeable%20Proxies-blueviolet?style=flat-square)](contracts/upgrades/ERC1967Proxy.sol)
 [![DEX AMM](https://img.shields.io/badge/DeFi-Constant%20Product%20AMM%20(DEX)-blue?style=flat-square)](contracts/defi/CPAMM.sol)
@@ -23,6 +24,7 @@ Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous
 
 Rather than passive video watching, this repository acts as my **verifiable proof of work**. It includes:
 - **Production Smart Contracts**:
+  - `MerkleAirdrop.sol` & `MerkleProof.sol`: Cryptographic Merkle Tree token distribution verifying $O(\log N)$ membership proofs with $O(1)$ on-chain storage.
   - `DSCEngine.sol` & `DecentralizedStableCoin.sol`: Algorithmic overcollateralized stablecoin engine with Chainlink price feeds, health factor monitoring, and liquidation mechanics.
   - `CPAMM.sol`: Constant Product Automated Market Maker DEX with $x \cdot y = k$ invariant pricing, 0.3% liquidity pool fees, and LP share minting/burning.
   - `ERC1967Proxy.sol`, `BoxV1.sol` & `BoxV2.sol`: Upgradeable proxy patterns using ERC-1967 pseudo-random storage slots and assembly `delegatecall`.
@@ -31,7 +33,7 @@ Rather than passive video watching, this repository acts as my **verifiable proo
   - `FundMe.sol`: DeFi crowdfunding with **Chainlink Price Feeds**, custom errors, immutable state, and memory caching (`cheaperWithdraw`).
   - `ManualToken.sol`: Full **EIP-20** token standard implementation from scratch.
   - `StorageFactory.sol` & `AddFiveStorage.sol`: On-chain factory deployment and OOP inheritance.
-- **Foundry Invariant Fuzzing & Testing**: Handler-based stateful fuzzing (`test/fuzz/Handler.sol`, `test/fuzz/Invariants.t.sol`) validating protocol-wide mathematical invariants across millions of randomized interaction sequences.
+- **Foundry Invariant Fuzzing & Testing**: Handler-based stateful fuzzing (`test/fuzz/Handler.sol`, `test/fuzz/Invariants.t.sol`) and unit suites validating protocol properties.
 - **Comprehensive Technical Guides**: In-depth analysis of Smart Contract Security (Reentrancy, Oracle Manipulation, Flash Loans), Wallets (EOA vs. ERC-4337), Layer 2 Rollups, EIP-4844 Blobs, and MEV dynamics.
 
 ---
@@ -85,7 +87,10 @@ Rather than passive video watching, this repository acts as my **verifiable proo
 - [x] **Module 12: Smart Contract Upgradeability & Proxies (ERC-1967)**
   - [x] Storage collision prevention with standardized slots (`keccak256("eip1967.proxy.implementation") - 1`)
   - [x] Assembly `delegatecall` dispatcher and state preservation validation across version upgrades
-- [x] **Module 13: Smart Contract Security, Auditing & Invariant Fuzzing**
+- [x] **Module 13: Cryptographic Merkle Tree Airdrops (`MerkleAirdrop.sol`)**
+  - [x] Commutative pair hashing & double-hashed leaf construction against second-preimage attacks
+  - [x] $O(1)$ on-chain storage with $O(\log N)$ proof verification
+- [x] **Module 14: Smart Contract Security, Auditing & Invariant Fuzzing**
   - [x] Threat models: Reentrancy (CEI pattern), Oracle Manipulation, Flash Loans, and Precision Loss
   - [x] Stateful Property-Based Invariant Fuzzing with Foundry (`test/fuzz/Invariants.t.sol`)
 
@@ -96,6 +101,9 @@ Rather than passive video watching, this repository acts as my **verifiable proo
 ```bash
 # Run all unit and invariant tests
 forge test
+
+# Run tests for Merkle Airdrop verification
+forge test --match-contract MerkleAirdropTest -vvv
 
 # Run stateful invariant fuzz testing with detailed trace
 forge test --match-contract InvariantsTest -vvvv
@@ -112,17 +120,6 @@ forge snapshot
 
 ---
 
-## 📚 Technical Documentation Directory
-
-- **[`notes/smart-contract-security-and-auditing.md`](notes/smart-contract-security-and-auditing.md)**: Master auditing guide covering Reentrancy (Checks-Effects-Interactions), Oracle Manipulation, Flash Loans, Precision Loss, and Invariant Fuzzing.
-- **[`notes/wallets-and-account-abstraction.md`](notes/wallets-and-account-abstraction.md)**: Deep dive into BIP-39/44 derivation, private key cryptography, multi-sig vs MPC, and ERC-4337 account abstraction architecture.
-- **[`notes/networks-mainnet-testnets-l2s.md`](notes/networks-mainnet-testnets-l2s.md)**: Comprehensive guide to L1 settlement, Sepolia/Holesky testnets, Optimistic vs. ZK Rollups, EIP-4844 blobs, and JSON-RPC node architecture.
-- **[`notes/advanced-transaction-mechanics-and-mev.md`](notes/advanced-transaction-mechanics-and-mev.md)**: Detailed transaction lifecycle, MEV (frontrunning, sandwich attacks), EIP-155 replay protection, and mempool nonce handling.
-- **[`notes/blockchain-fundamentals.md`](notes/blockchain-fundamentals.md)**: Cryptographic hashing, consensus mechanisms, and EVM state transition rules.
-- **[`activities/testnet-transaction-lab.md`](activities/testnet-transaction-lab.md)**: Hands-on developer wallet configuration, faucet liquidity acquisition, and EIP-1559 transaction signature dissection.
-
----
-
 ## 📂 Repository Structure
 
 ```text
@@ -133,6 +130,9 @@ web3-fundamentals-log/
 ├── .gitignore                                    # Strict secret and environment ignore rules
 ├── contracts/
 │   ├── README.md                                 # Full architecture & deployment guide
+│   ├── airdrops/
+│   │   ├── MerkleProof.sol                       # Cryptographic Merkle proof verifier
+│   │   └── MerkleAirdrop.sol                     # O(1) gas-efficient token airdrop distributor
 │   ├── upgrades/
 │   │   ├── ERC1967Proxy.sol                      # Collision-resistant delegatecall proxy
 │   │   ├── BoxV1.sol                             # Initial logic implementation (v1.0.0)
@@ -162,6 +162,7 @@ web3-fundamentals-log/
 │   ├── fuzz/
 │   │   ├── Handler.sol                           # Action bounding handler for stateful fuzzing
 │   │   └── Invariants.t.sol                      # Core protocol mathematical invariant test suite
+│   ├── MerkleAirdropTest.t.sol                   # Automated unit tests for Merkle Tree Airdrops
 │   ├── UpgradeTest.t.sol                         # Automated unit tests for ERC-1967 Proxies
 │   ├── CPAMMTest.t.sol                           # Automated unit tests for AMM DEX
 │   ├── DSCEngineTest.t.sol                       # Automated unit tests for DeFi DSC Protocol

@@ -10,6 +10,12 @@ This directory contains production-grade Solidity smart contracts developed thro
 +---------------------------------------------------------------------------------+
 |                               Smart Contract Suite                              |
 |                                                                                 |
+|  [ Cryptographic Airdrops Suite ]                                               |
+|    airdrops/MerkleProof.sol (Commutative Sorted Merkle Proof Verifier)          |
+|           ▲                                                                     |
+|           │ (Verifies O(log N) Membership Proofs)                               |
+|    airdrops/MerkleAirdrop.sol (O(1) Storage Gas-Efficient Token Distributor)    |
+|                                                                                 |
 |  [ Smart Contract Upgradeability Suite ]                                        |
 |    ERC1967Proxy.sol (Standardized Storage Slot Delegatecall Proxy)              |
 |           │ (Delegatecall dispatching)                                          |
@@ -64,23 +70,23 @@ This directory contains production-grade Solidity smart contracts developed thro
 
 ## 📄 File Summaries
 
-### 1. [`upgrades/ERC1967Proxy.sol`](./upgrades/ERC1967Proxy.sol), [`upgrades/BoxV1.sol`](./upgrades/BoxV1.sol), [`upgrades/BoxV2.sol`](./upgrades/BoxV2.sol)
-- **ERC-1967 Upgradeable Proxy Pattern**:
-  - Eliminates storage collisions by storing logic contract addresses at unassigned pseudo-random storage slots (`keccak256("eip1967.proxy.implementation") - 1`).
-  - Dispatches calls via assembly `delegatecall`.
-  - **State-Preserving Upgrades**: Demonstrates upgrading from `BoxV1` ($1.0.0$) to `BoxV2` ($2.0.0$) while retaining historical storage values.
+### 1. [`airdrops/MerkleAirdrop.sol`](./airdrops/MerkleAirdrop.sol) & [`airdrops/MerkleProof.sol`](./airdrops/MerkleProof.sol)
+- **Cryptographic Merkle Airdrop**:
+  - Replaces massive $O(N)$ whitelist storage mappings with a single 32-byte Merkle root ($O(1)$ on-chain storage).
+  - Users provide a cryptographic branch path (`merkleProof`) verified in $O(\log N)$ hashing steps.
+  - Double-hashed leaf construction (`keccak256(bytes.concat(keccak256(abi.encode(...))))`) and sorted commutative pair hashing to protect against second-preimage attacks.
 
-### 2. [`defi/CPAMM.sol`](./defi/CPAMM.sol)
+### 2. [`upgrades/ERC1967Proxy.sol`](./upgrades/ERC1967Proxy.sol), [`upgrades/BoxV1.sol`](./upgrades/BoxV1.sol), [`upgrades/BoxV2.sol`](./upgrades/BoxV2.sol)
+- **ERC-1967 Upgradeable Proxies**: Collision-resistant unassigned storage slots and assembly `delegatecall`.
+
+### 3. [`defi/CPAMM.sol`](./defi/CPAMM.sol)
 - **Constant Product Automated Market Maker (Uniswap v2 Invariant)**: $(x + \Delta x \cdot 0.997) \cdot (y - \Delta y) = k$.
 
-### 3. [`defi/DSCEngine.sol`](./defi/DSCEngine.sol) & [`defi/DecentralizedStableCoin.sol`](./defi/DecentralizedStableCoin.sol)
+### 4. [`defi/DSCEngine.sol`](./defi/DSCEngine.sol) & [`defi/DecentralizedStableCoin.sol`](./defi/DecentralizedStableCoin.sol)
 - **Decentralized Algorithmic Stablecoin ($1.00 USD Peg)** with 200% overcollateralization and liquidations.
 
-### 4. [`nfts/MoodNft.sol`](./nfts/MoodNft.sol) & [`nfts/BasicNft.sol`](./nfts/BasicNft.sol)
+### 5. [`nfts/MoodNft.sol`](./nfts/MoodNft.sol) & [`nfts/BasicNft.sol`](./nfts/BasicNft.sol)
 - **Dynamic On-Chain SVG Artwork** with Base64 encoding.
 
-### 5. [`raffle/Raffle.sol`](./raffle/Raffle.sol)
+### 6. [`raffle/Raffle.sol`](./raffle/Raffle.sol)
 - **Provably Fair Lottery** using Chainlink VRF v2.5 and Chainlink Automation.
-
-### 6. [`FundMe.sol`](./FundMe.sol) & [`tokens/ManualToken.sol`](./tokens/ManualToken.sol)
-- Crowdfunding oracle contract and native ERC-20 implementation.
