@@ -1,10 +1,11 @@
 # ⛓️ Web3 Fundamentals Log
 
-> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Provably Fair Lotteries (Chainlink VRF & Automation), Token Standards (ERC-20), Layer 2 scaling, and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
+> A comprehensive, production-grade engineering log of my journey into Ethereum, EVM internals, Account Abstraction (ERC-4337), Dynamic On-Chain NFTs (ERC-721), Provably Fair Lotteries (Chainlink VRF & Automation), Token Standards (ERC-20), Layer 2 scaling, and automated Foundry Testing through the [Cyfrin Updraft](https://updraft.cyfrin.io/) curriculum.
 
 [![Course](https://img.shields.io/badge/Course-Cyfrin%20Updraft-blue?style=flat-square)](https://updraft.cyfrin.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.19-363636?style=flat-square&logo=solidity)](contracts/)
 [![Foundry](https://img.shields.io/badge/Framework-Foundry-red?style=flat-square&logo=ethereum)](test/)
+[![NFTs](https://img.shields.io/badge/Standard-ERC--721%20On--Chain%20SVG-green?style=flat-square)](contracts/nfts/MoodNft.sol)
 [![Chainlink VRF](https://img.shields.io/badge/Chainlink-VRF%20v2.5%20%26%20Automation-375BD2?style=flat-square&logo=chainlink&logoColor=white)](contracts/raffle/Raffle.sol)
 [![ERC-20](https://img.shields.io/badge/Standard-ERC--20-blueviolet?style=flat-square)](contracts/tokens/ManualToken.sol)
 [![Account Abstraction](https://img.shields.io/badge/Standard-ERC--4337-orange?style=flat-square)](notes/wallets-and-account-abstraction.md)
@@ -18,11 +19,12 @@ Welcome! I am an aspiring Web3 & Smart Contract Engineer documenting my rigorous
 
 Rather than passive video watching, this repository acts as my **verifiable proof of work**. It includes:
 - **Production Smart Contracts**:
+  - `MoodNft.sol` & `BasicNft.sol`: Fully on-chain dynamic SVG NFTs encoding graphics into Base64 with interactive state toggling.
   - `Raffle.sol`: Provably fair lottery governed by **Chainlink VRF v2.5** and autonomous **Chainlink Automation** with an enum state machine.
   - `FundMe.sol`: DeFi crowdfunding with **Chainlink Price Feeds**, custom errors, immutable state, and memory caching (`cheaperWithdraw`).
   - `ManualToken.sol`: Full **EIP-20** token standard implementation from scratch.
   - `StorageFactory.sol` & `AddFiveStorage.sol`: On-chain factory deployment and OOP inheritance.
-- **Foundry Unit Testing & Deployment**: Comprehensive Forge test suites (`test/RaffleTest.t.sol`, `test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`) with time-travel cheatcodes (`vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`).
+- **Foundry Unit Testing & Deployment**: Comprehensive Forge test suites (`test/NftTest.t.sol`, `test/RaffleTest.t.sol`, `test/FundMeTest.t.sol`, `test/ManualTokenTest.t.sol`) with cheatcodes (`vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`).
 - **Comprehensive Technical Guides**: In-depth analysis of Wallets (EOA vs. Smart Account ERC-4337, MPC, Multisig), Layer 2 Rollups (Optimistic vs. ZK), EIP-4844 Blobs, and MEV dynamics.
 - **Developer CLI Utilities**: Standalone Python tooling (`scripts/evm_inspector.py`) to simulate EIP-1559 base fee burns, calculate L2 rollup execution/blob fees, and compute mempool speed-up gas requirements.
 
@@ -63,8 +65,12 @@ Rather than passive video watching, this repository acts as my **verifiable proo
   - [x] Chainlink VRF v2.5 integration for unbiasable, on-chain verifiable randomness
   - [x] Chainlink Automation (`checkUpkeep` & `performUpkeep`) for autonomous execution
   - [x] Enum State Machine (`RaffleState { OPEN, CALCULATING }`)
-- [x] **Module 9: Foundry Automated Testing & Deployment**
-  - [x] Unit test suites with Forge: `RaffleTest.t.sol`, `FundMeTest.t.sol`, `ManualTokenTest.t.sol`
+- [x] **Module 9: Dynamic On-Chain SVG NFTs (`MoodNft.sol`)**
+  - [x] ERC-721 standard implementation from scratch (`BasicNft.sol`)
+  - [x] Fully on-chain Base64 metadata encoding without IPFS/cloud hosting
+  - [x] Dynamic state manipulation: Owner-controlled mood flipping (Happy $\leftrightarrow$ Sad)
+- [x] **Module 10: Foundry Automated Testing & Deployment**
+  - [x] Unit test suites with Forge: `NftTest.t.sol`, `RaffleTest.t.sol`, `FundMeTest.t.sol`, `ManualTokenTest.t.sol`
   - [x] VM Cheatcodes: `vm.warp`, `vm.roll`, `vm.prank`, `vm.deal`, `vm.expectRevert`
 
 ---
@@ -76,6 +82,14 @@ Located in [`/contracts`](contracts/):
 ```
 +---------------------------------------------------------------------------------+
 |                               Smart Contract Suite                              |
+|                                                                                 |
+|  [ Dynamic On-Chain NFT Suite ]                                                 |
+|    Base64.sol (Gas-efficient assembly Base64 encoder)                          |
+|           ▲                                                                     |
+|           │                                                                     |
+|    BasicNft.sol (ERC-721 Standard from scratch)                                 |
+|           ▲                                                                     |
+|           └─── (Inherits) ─── MoodNft.sol (On-Chain Dynamic SVG NFT)            |
 |                                                                                 |
 |  [ Provably Fair Lottery Suite ]                                                |
 |    Chainlink VRF Coordinator (Verifiable Random Function v2.5)                   |
@@ -110,28 +124,17 @@ Located in [`/contracts`](contracts/):
 ## 🧪 Foundry Automated Testing & Deployment
 
 ```bash
-# Run all unit tests
+# Run all unit tests across all suites
 forge test
 
-# Run tests for Raffle with detailed execution traces
+# Run tests for Dynamic SVG NFTs
+forge test --match-contract NftTest -vvv
+
+# Run tests for Raffle with execution traces
 forge test --match-contract RaffleTest -vvvv
 
 # Run gas snapshot analysis
 forge snapshot
-```
-
----
-
-## 🛠️ Developer Tooling: `evm_inspector.py`
-
-Located in [`scripts/evm_inspector.py`](scripts/evm_inspector.py), this zero-dependency Python utility provides instant EVM calculations:
-
-```bash
-# Calculate EIP-1559 L1 fee breakdown (burned fee vs. validator tip)
-python scripts/evm_inspector.py --calc-fee --gas 21000 --base-fee 18.5 --priority-fee 1.5
-
-# Calculate Layer 2 Rollup transaction fee (L2 execution + L1 calldata/blob cost)
-python scripts/evm_inspector.py --l2-fee --l2-gas 50000 --l2-gas-price 0.01 --calldata-bytes 128
 ```
 
 ---
@@ -146,6 +149,10 @@ web3-fundamentals-log/
 ├── .gitignore                                    # Strict secret and environment ignore rules
 ├── contracts/
 │   ├── README.md                                 # Full architecture & deployment guide
+│   ├── nfts/
+│   │   ├── Base64.sol                            # Assembly-level Base64 string encoder
+│   │   ├── BasicNft.sol                          # ERC-721 token standard from scratch
+│   │   └── MoodNft.sol                           # Dynamic on-chain SVG NFT with state flipping
 │   ├── raffle/
 │   │   └── Raffle.sol                            # Provably fair lottery with VRF & Automation
 │   ├── FundMe.sol                                # Crowdfunding with Chainlink & gas patterns
@@ -160,6 +167,7 @@ web3-fundamentals-log/
 │       └── MockV3Aggregator.sol                  # Mock Chainlink Price Feed for local testing
 ├── test/
 │   ├── TestHelpers.sol                           # Minimal Forge VM cheatcode interface
+│   ├── NftTest.t.sol                             # Automated unit tests for ERC-721 and Mood NFT
 │   ├── RaffleTest.t.sol                          # Automated unit tests for Raffle & VRF
 │   ├── FundMeTest.t.sol                          # Automated unit tests for FundMe
 │   └── ManualTokenTest.t.sol                     # Automated unit tests for ManualToken ERC-20

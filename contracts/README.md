@@ -10,6 +10,14 @@ This directory contains production-grade Solidity smart contracts developed thro
 +---------------------------------------------------------------------------------+
 |                               Smart Contract Suite                              |
 |                                                                                 |
+|  [ Dynamic On-Chain NFT Suite ]                                                 |
+|    Base64.sol (Gas-efficient assembly Base64 encoder)                          |
+|           ▲                                                                     |
+|           │                                                                     |
+|    BasicNft.sol (ERC-721 Standard from scratch)                                 |
+|           ▲                                                                     |
+|           └─── (Inherits) ─── MoodNft.sol (On-Chain Dynamic SVG NFT)            |
+|                                                                                 |
 |  [ Provably Fair Lottery Suite ]                                                |
 |    Chainlink VRF Coordinator (Verifiable Random Function v2.5)                   |
 |           ▲                                                                     |
@@ -26,10 +34,7 @@ This directory contains production-grade Solidity smart contracts developed thro
 |    PriceConverter.sol (Library: using PriceConverter for uint256)               |
 |           ▲                                                                     |
 |           │ (Price calculations & conversion rates)                             |
-|    FundMe.sol                                                                   |
-|      ├── Custom Errors: `FundMe__NotOwner()`, `FundMe__DidNotSendEnoughETH()`   |
-|      ├── Gas Optimizations: `immutable`, `constant`, SLOAD caching in memory    |
-|      └── Special Functions: `receive()` & `fallback()` to handle native ETH     |
+|    FundMe.sol (Crowdfunding with Custom Errors & Gas-Optimized Memory Caching)   |
 |                                                                                 |
 |  [ Token Standards Suite ]                                                      |
 |    tokens/ManualToken.sol (EIP-20 Standard from scratch with custom errors)     |
@@ -45,24 +50,18 @@ This directory contains production-grade Solidity smart contracts developed thro
 
 ## 📄 File Summaries
 
-### 1. [`raffle/Raffle.sol`](./raffle/Raffle.sol)
+### 1. [`nfts/MoodNft.sol`](./nfts/MoodNft.sol) & [`nfts/BasicNft.sol`](./nfts/BasicNft.sol)
+- **Dynamic On-Chain SVG Artwork**: Encodes raw SVG vector graphics and JSON metadata directly into Base64 strings without IPFS or external servers.
+- **ERC-721 Standard from Scratch**: Implements token ownership, balances, approvals, and dynamic metadata lookups.
+- **State Manipulation**: Interactive `flipMood(tokenId)` allowing owners to toggle the rendered on-chain artwork between HAPPY 😊 and SAD 😢 states.
+
+### 2. [`raffle/Raffle.sol`](./raffle/Raffle.sol)
 - **Provably Fair Lottery**: Guarantees unbiasable winner selection using **Chainlink VRF v2.5**.
-- **Decentralized Autonomous Automation**: Integrates **Chainlink Automation** (`checkUpkeep` & `performUpkeep`) to trigger draws automatically when time and player thresholds are satisfied.
-- **State Machine Protection**: Implements `enum RaffleState { OPEN, CALCULATING }` to prevent frontrunning and block new ticket entries while the random word is being generated.
-- **Custom Errors**: `Raffle__SendMoreToEnterRaffle`, `Raffle__RaffleNotOpen`, `Raffle__UpkeepNotNeeded`, `Raffle__TransferFailed`.
+- **Decentralized Automation**: Integrates **Chainlink Automation** (`checkUpkeep` & `performUpkeep`) with an `enum RaffleState { OPEN, CALCULATING }` state machine.
 
-### 2. [`FundMe.sol`](./FundMe.sol)
+### 3. [`FundMe.sol`](./FundMe.sol)
 - **Decentralized Crowdfunding**: Accepts native ETH contributions with a minimum constraint enforced in USD ($5 USD).
-- **Oracle Integration**: Queries Chainlink Price Feeds dynamically via the `PriceConverter` library.
-- **Gas Optimization Patterns**:
-  - `constant` for `MINIMUM_USD` (compiled directly into bytecode, 0 storage reads).
-  - `immutable` for `i_owner` and `i_priceFeed` (written once in constructor, stored in bytecode).
-  - **Custom Errors** (`revert FundMe__NotOwner()`) saving hundreds of gas compared to legacy `require(..., "string")`.
-  - **`cheaperWithdraw()` pattern**: Caches the storage `s_funders` array into local `memory` to eliminate repeated expensive `SLOAD` opcodes ($\approx 2,100\text{ gas}$ each).
+- **Gas Optimization Patterns**: `constant`, `immutable`, Custom Errors (EIP-838), and memory-caching (`cheaperWithdraw`).
 
-### 3. [`tokens/ManualToken.sol`](./tokens/ManualToken.sol)
+### 4. [`tokens/ManualToken.sol`](./tokens/ManualToken.sol)
 - **EIP-20 Token Standard From Scratch**: Complete implementation of ERC-20 mechanics (`transfer`, `approve`, `transferFrom`, `allowance`, `balanceOf`).
-- **Custom Errors**: `Token__InsufficientBalance`, `Token__AllowanceExceeded`, and `Token__ZeroAddressNotAllowed`.
-
-### 4. [`mocks/MockVRFCoordinator.sol`](./mocks/MockVRFCoordinator.sol) & [`mocks/MockV3Aggregator.sol`](./mocks/MockV3Aggregator.sol)
-- Mock oracles for local Foundry test execution without requiring network connectivity.
